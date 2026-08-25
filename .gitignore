@@ -1,3 +1,11 @@
 setup.sh
 test/
 .env/
+
+# MinIO / environment secrets — never commit real credentials
+.env.local
+
+# Data files — stored in MinIO, not in Git
+data/raw/
+data/processed/
+downloaded_files/

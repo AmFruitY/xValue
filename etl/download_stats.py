@@ -9,6 +9,8 @@ import pandas as pd
 import soccerdata as sd
 from pathlib import Path
 
+from etl.minio_client import upload_file
+
 LEAGUES = ["Big 5 European Leagues Combined"]
 
 # soccerdata season format: last two digits of each year concatenated
@@ -82,6 +84,9 @@ def main() -> None:
     print(f"\nDone. {len(all_players)} player-season rows saved to '{out_path}'.")
     if "player" in all_players.columns:
         print(all_players[["season", "league", "player", "age"]].head(10).to_string(index=False))
+
+    # Upload to MinIO so the dataset is accessible from any machine
+    upload_file(local_path=out_path, object_key="raw/all_players.csv")
 
 
 if __name__ == "__main__":
