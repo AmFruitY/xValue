@@ -134,10 +134,10 @@ You can also trigger it manually at any time from the web UI.
 ### Pipeline graph
 
 ```
-download_stats ──┬──▶ join_players    ──▶ extract_market_value
-               │
-dowload_u23  ──┼──▶ limpieza_datos  ──▶ exploitation_zone
-               ┘
+upload_landing ──┐
+download_stats ──┼──▶ join_players    ──▶ extract_market_value
+                 │
+dowload_u23    ──┴──▶ limpieza_spark  ──▶ exploitation_zone
 ```
 
 ### Manually trigger a run
@@ -179,10 +179,21 @@ python -m etl.download_u23
 
 Airflow scheduler (weekly)
     └──▶ triggers xvalue_etl_pipeline DAG
-            ├──▶ download_stats.py  → data/raw/  + MinIO upload
-            ├──▶ download_u23.py   → data/raw/
-            ├──▶ join_players.py   → data/processed/
-            ├──▶ limpieza_datos.py → data/trusted/
-            ├──▶ extract_market_value.py → data/processed/
-            └──▶ exploitation_zone.py    → data/exploitation/
+            ├──▶ upload_landing.py   → MinIO (landing zone)
+            ├──▶ download_stats.py   → MinIO (raw zone)
+            ├──▶ download_u23.py     → MinIO (raw zone)
+            ├──▶ join_players.py     → MinIO (processed zone)
+            ├──▶ limpieza_spark.py   → PySpark reads landing/raw → writes Parquet to MinIO (trusted zone)
+            ├──▶ extract_market_value.py → MinIO (processed zone)
+            └──▶ exploitation_zone.py    → DuckDB reads Parquet from MinIO → writes to MinIO (exploitation zone)
 ```
+
+---
+
+## 🏛️ Lakehouse Architecture
+
+This project implements a modern data lakehouse pattern locally using **MinIO** as the storage layer, **Apache Spark (PySpark)** as the distributed data processing engine, and **DuckDB** as the analytical engine.
+
+1. **Landing / Raw Zone**: Python scripts fetch data from APIs and save raw CSVs into MinIO.
+2. **Trusted Zone**: PySpark (`limpieza_spark.py`) reads the raw CSVs directly from MinIO, cleans the data using distributed DataFrame operations, and writes optimized Parquet files back to MinIO.
+3. **Exploitation Zone**: DuckDB (`exploitation_zone.py`) connects to MinIO via the `httpfs` extension to query the trusted Parquet files instantly without downloading them, and builds the final analytical tables.

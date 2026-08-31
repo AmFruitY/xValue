@@ -9,16 +9,17 @@ Can also be triggered manually from the Airflow UI at http://localhost:8080
 Pipeline stages
 ───────────────
 Stage 1 — Download (parallel)
+    upload_landing   →  landing files to MinIO
     download_stats   →  data/raw/all_players.csv  + upload to MinIO
     download_u23     →  data/u23_players.csv
 
 Stage 2 — Process (after downloads)
     join_players         →  data/processed/all_players_joined.csv
-    limpieza_datos       →  data/trusted/ (DuckDB + Parquet)
+    limpieza_spark       →  data/trusted/ (PySpark writes Parquet to MinIO)
 
 Stage 3 — Enrich (after processing)
     extract_market_value →  data/processed/player_market_value.csv
-    exploitation_zone    →  data/exploitation/ (DuckDB + Parquet)
+    exploitation_zone    →  data/exploitation/ (DuckDB reads/writes MinIO)
 """
 
 import os
@@ -76,7 +77,16 @@ with DAG(
     tags=["xvalue", "etl"],
 ) as dag:
 
-    # ── Stage 1: Download (run in parallel) ───────────────────────────────
+    # ── Stage 1: Download & Upload (run in parallel) ──────────────────
+    t_upload_landing = PythonOperator(
+        task_id="upload_landing",
+        python_callable=run_etl,
+        op_args=["etl.upload_landing"],
+        doc_md=(
+            "Uploads static files from `data/landing/` to MinIO so PySpark can read them."
+        ),
+    )
+
     t_download_stats = PythonOperator(
         task_id="download_stats",
         python_callable=run_etl,
@@ -109,12 +119,12 @@ with DAG(
     )
 
     t_limpieza = PythonOperator(
-        task_id="limpieza_datos",
+        task_id="limpieza_spark",
         python_callable=run_etl,
-        op_args=["etl.limpieza_datos"],
+        op_args=["etl.limpieza_spark"],
         doc_md=(
-            "Cleans and validates injury and U23 stats datasets from the landing zone. "
-            "Writes trusted data to `data/trusted/` as DuckDB tables and Parquet files."
+            "PySpark job that cleans and validates datasets from the landing zone in MinIO. "
+            "Writes trusted data back to MinIO as Parquet files."
         ),
     )
 
@@ -141,9 +151,9 @@ with DAG(
 
     # ── Task dependencies (the pipeline graph) ───────────────────────────
     #
-    #   download_stats ──┬──▶ join_players     ──▶ extract_market_value
-    #                    └──▶ limpieza_datos   ──▶ exploitation_zone
-    #   download_u23   ──┘
+    #   upload_landing ──┐
+    #   download_stats ──┼──▶ join_players     ──▶ extract_market_value
+    #   download_u23   ──┴──▶ limpieza_spark   ──▶ exploitation_zone
     #
-    [t_download_stats, t_download_u23] >> t_join_players >> t_market_value
-    [t_download_stats, t_download_u23] >> t_limpieza >> t_exploitation
+    [t_upload_landing, t_download_stats, t_download_u23] >> t_join_players >> t_market_value
+    [t_upload_landing, t_download_stats, t_download_u23] >> t_limpieza >> t_exploitation
