@@ -20,7 +20,7 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ── One-shot container: creates the bucket on first startup ───────────────
+  # ── One-shot container: creates the MinIO bucket on first startup ─────────
   createbuckets:
     image: quay.io/minio/mc:latest
     container_name: xvalue-minio-init
@@ -40,6 +40,126 @@ services:
       "
     restart: on-failure
 
+  # ── Airflow metadata database ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15
+    container_name: xvalue-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ── One-shot: migrate DB schema and create admin user ────────────────────
+  airflow-init:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: xvalue-airflow-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${POSTGRES_PASSWORD}@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./etl:/opt/airflow/project/etl
+      - ./data:/opt/airflow/project/data
+      - ./downloaded_files:/opt/airflow/project/downloaded_files
+    working_dir: /opt/airflow/project
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@xvalue.local \
+          --password $${AIRFLOW_WWW_USER_PASSWORD} || true
+        echo "✓ Airflow DB ready"
+    restart: on-failure
+
+  # ── Airflow web UI  →  http://localhost:8080 ─────────────────────────────
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: xvalue-airflow-webserver
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${POSTGRES_PASSWORD}@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      # Pass MinIO credentials so ETL tasks can upload files
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./etl:/opt/airflow/project/etl
+      - ./data:/opt/airflow/project/data
+      - ./downloaded_files:/opt/airflow/project/downloaded_files
+    working_dir: /opt/airflow/project
+    command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Airflow scheduler (triggers DAG runs on schedule) ────────────────────
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: xvalue-airflow-scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${POSTGRES_PASSWORD}@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      # Pass MinIO credentials so ETL tasks can upload files
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./etl:/opt/airflow/project/etl
+      - ./data:/opt/airflow/project/data
+      - ./downloaded_files:/opt/airflow/project/downloaded_files
+    working_dir: /opt/airflow/project
+    command: scheduler
+    restart: unless-stopped
+
 volumes:
   minio_data:
+    driver: local
+  postgres_data:
     driver: local

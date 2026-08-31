@@ -8,4 +8,8 @@ test/
 # Data files — stored in MinIO, not in Git
 data/raw/
 data/processed/
-downloaded_files/
+downloaded_files/
+
+# Airflow generated files
+logs/
+dags/__pycache__/
