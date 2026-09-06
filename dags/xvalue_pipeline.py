@@ -10,7 +10,7 @@ Pipeline stages
 ───────────────
 Stage 1 — Download (parallel)
     upload_landing   →  landing files to MinIO
-    download_stats   →  data/raw/all_players.csv  + upload to MinIO
+    fbref_stats_all_players   →  data/raw/fbref_stats_all_players.csv  + upload to MinIO
     download_u23     →  data/u23_players.csv
 
 Stage 2 — Process (after downloads)
@@ -44,7 +44,7 @@ def run_etl(module_name: str) -> None:
     3. Imports the given module and calls its main() function.
 
     Args:
-        module_name: dotted module path, e.g. "etl.download_stats"
+        module_name: dotted module path, e.g. "etl.fbref_stats_all_players"
     """
     os.chdir(PROJECT_DIR)
     if PROJECT_DIR not in sys.path:
@@ -87,13 +87,13 @@ with DAG(
         ),
     )
 
-    t_download_stats = PythonOperator(
-        task_id="download_stats",
+    t_fbref_stats_all_players = PythonOperator(
+        task_id="fbref_stats_all_players",
         python_callable=run_etl,
-        op_args=["etl.download_stats"],
+        op_args=["etl.fbref_stats_all_players"],
         doc_md=(
             "Scrapes FBref for player season stats across Big 5 leagues (2018–2023). "
-            "Saves to `data/raw/all_players.csv` and uploads to MinIO."
+            "Saves to `data/raw/fbref_stats_all_players.csv` and uploads to MinIO."
         ),
     )
 
@@ -102,7 +102,7 @@ with DAG(
         python_callable=run_etl,
         op_args=["etl.download_u23"],
         doc_md=(
-            "Same FBref scrape as download_stats but filters to players aged under 23. "
+            "Same FBref scrape as fbref_stats_all_players but filters to players aged under 23. "
             "Saves to `data/u23_players.csv`."
         ),
     )
@@ -113,8 +113,8 @@ with DAG(
         python_callable=run_etl,
         op_args=["etl.join_players"],
         doc_md=(
-            "Joins all_players.csv with players.csv (Transfermarkt bios) on "
-            "player name + birth year. Saves to `data/processed/all_players_joined.csv`."
+            "Joins fbref_stats_all_players.csv with players.csv (Transfermarkt bios) on "
+            "player name + birth year. Saves to `data/processed/all_players_joined.csv`.",
         ),
     )
 
@@ -152,8 +152,8 @@ with DAG(
     # ── Task dependencies (the pipeline graph) ───────────────────────────
     #
     #   upload_landing ──┐
-    #   download_stats ──┼──▶ join_players     ──▶ extract_market_value
-    #   download_u23   ──┴──▶ limpieza_spark   ──▶ exploitation_zone
+    #   fbref_stats_all_players ──┼──▶ join_players     ──▶ extract_market_value
+    #   download_u23            ──┴──▶ limpieza_spark   ──▶ exploitation_zone
     #
-    [t_upload_landing, t_download_stats, t_download_u23] >> t_join_players >> t_market_value
-    [t_upload_landing, t_download_stats, t_download_u23] >> t_limpieza >> t_exploitation
+    [t_upload_landing, t_fbref_stats_all_players, t_download_u23] >> t_join_players >> t_market_value
+    [t_upload_landing, t_fbref_stats_all_players, t_download_u23] >> t_limpieza >> t_exploitation

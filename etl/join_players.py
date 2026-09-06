@@ -1,5 +1,5 @@
 """
-Joins all_players.csv (FBref player-season stats) with players.csv
+Joins fbref_stats_all_players.csv (FBref player-season stats) with players.csv
 (Transfermarkt player bios/market values) on player name.
 
 Name alone is ambiguous (938 duplicate names in players.csv), so the
@@ -18,7 +18,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def main() -> None:
-    all_players = pd.read_csv(RAW_DIR / "all_players.csv")
+    all_players = pd.read_csv(RAW_DIR / "fbref_stats_all_players.csv")
     players = pd.read_csv(RAW_DIR / "players.csv")
 
     players["birth_year"] = pd.to_datetime(
@@ -37,7 +37,7 @@ def main() -> None:
     merged.to_csv(out_path, index=False)
 
     matched = merged["name"].notna().sum()
-    print(f"all_players.csv rows: {len(all_players)}")
+    print(f"fbref_stats_all_players.csv rows: {len(all_players)}")
     print(f"Joined rows: {len(merged)} ({matched} matched to a player in players.csv)")
     print(f"Saved to '{out_path}'")
 

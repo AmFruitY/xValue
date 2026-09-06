@@ -2,7 +2,7 @@
 Downloads FBref player season stats for the top 5 European leagues across
 seasons 2018/19 – 2022/23, for players of all ages.
 
-Output: data/all_players.csv
+Output: data/raw/fbref_stats_all_players.csv
 """
 
 import pandas as pd
@@ -78,7 +78,7 @@ def main() -> None:
     # Keep players of all ages
     all_players = merged.sort_values(["season", "league", "age"])
 
-    out_path = OUTPUT_DIR / "all_players.csv"
+    out_path = OUTPUT_DIR / "fbref_stats_all_players.csv"
     all_players.to_csv(out_path, index=False)
 
     print(f"\nDone. {len(all_players)} player-season rows saved to '{out_path}'.")
@@ -86,7 +86,7 @@ def main() -> None:
         print(all_players[["season", "league", "player", "age"]].head(10).to_string(index=False))
 
     # Upload to MinIO so the dataset is accessible from any machine
-    upload_file(local_path=out_path, object_key="raw/all_players.csv")
+    upload_file(local_path=out_path, object_key="raw/fbref_stats_all_players.csv")
 
 
 if __name__ == "__main__":
