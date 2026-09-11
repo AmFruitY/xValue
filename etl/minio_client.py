@@ -62,9 +62,9 @@ def upload_file(local_path: str | Path, object_key: str, bucket: str = _BUCKET) 
     """
     client = get_client()
     local_path = Path(local_path)
-    print(f"  ↑ Uploading '{local_path}' → s3://{bucket}/{object_key}")
+    print(f"  [UP] Uploading '{local_path}' -> s3://{bucket}/{object_key}")
     client.upload_file(str(local_path), bucket, object_key)
-    print(f"  ✓ Upload complete")
+    print(f"  [OK] Upload complete")
 
 
 def download_file(object_key: str, local_path: str | Path, bucket: str = _BUCKET) -> None:
@@ -79,9 +79,9 @@ def download_file(object_key: str, local_path: str | Path, bucket: str = _BUCKET
     client = get_client()
     local_path = Path(local_path)
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"  ↓ Downloading s3://{bucket}/{object_key} → '{local_path}'")
+    print(f"  [DN] Downloading s3://{bucket}/{object_key} -> '{local_path}'")
     client.download_file(bucket, object_key, str(local_path))
-    print(f"  ✓ Download complete")
+    print(f"  [OK] Download complete")
 
 
 def list_objects(prefix: str = "", bucket: str = _BUCKET) -> list[str]:

@@ -11,6 +11,7 @@ Pipeline stages
 Stage 1 — Download (parallel)
     upload_landing   →  landing files to MinIO
     fbref_stats_all_players   →  data/raw/fbref_stats_all_players.csv  + upload to MinIO
+    understat_stats_all_players → data/raw/understat_stats_all_players.csv + upload to MinIO
     download_u23     →  data/u23_players.csv
 
 Stage 2 — Process (after downloads)
@@ -107,6 +108,16 @@ with DAG(
         ),
     )
 
+    t_understat_stats_all_players = PythonOperator(
+        task_id="understat_stats_all_players",
+        python_callable=run_etl,
+        op_args=["etl.understat_stats_all_players"],
+        doc_md=(
+            "Scrapes Understat for player season stats across Big 5 leagues (2018–2023). "
+            "Saves to `data/raw/understat_stats_all_players.csv` and uploads to MinIO."
+        ),
+    )
+
     # ── Stage 2: Process (depend on downloads) ────────────────────────────
     t_join_players = PythonOperator(
         task_id="join_players",
@@ -153,7 +164,8 @@ with DAG(
     #
     #   upload_landing ──┐
     #   fbref_stats_all_players ──┼──▶ join_players     ──▶ extract_market_value
+    #   understat_stats_all_players ─┤
     #   download_u23            ──┴──▶ limpieza_spark   ──▶ exploitation_zone
     #
-    [t_upload_landing, t_fbref_stats_all_players, t_download_u23] >> t_join_players >> t_market_value
-    [t_upload_landing, t_fbref_stats_all_players, t_download_u23] >> t_limpieza >> t_exploitation
+    [t_upload_landing, t_fbref_stats_all_players, t_understat_stats_all_players, t_download_u23] >> t_join_players >> t_market_value
+    [t_upload_landing, t_fbref_stats_all_players, t_understat_stats_all_players, t_download_u23] >> t_limpieza >> t_exploitation

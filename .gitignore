@@ -13,3 +13,6 @@ downloaded_files/
 # Airflow generated files
 logs/
 dags/__pycache__/
+
+# ETL cache
+etl/__pycache__/
