@@ -9,12 +9,12 @@ Usage example
     from etl.minio_client import upload_file, download_file
 
     # Upload a local CSV to MinIO
-    upload_file(local_path="data/raw/all_players.csv",
-                object_key="raw/all_players.csv")
+    upload_file(local_path="data/raw/fbref_stats_all_players.csv",
+                object_key="raw/fbref_stats_all_players.csv")
 
     # Download it back later
-    download_file(object_key="raw/all_players.csv",
-                  local_path="data/raw/all_players.csv")
+    download_file(object_key="raw/fbref_stats_all_players.csv",
+                  local_path="data/raw/fbref_stats_all_players.csv")
 """
 
 import os
@@ -56,15 +56,15 @@ def upload_file(local_path: str | Path, object_key: str, bucket: str = _BUCKET) 
     Upload a local file to MinIO.
 
     Args:
-        local_path:  Path on your machine, e.g. "data/raw/all_players.csv"
-        object_key:  Destination path inside the bucket, e.g. "raw/all_players.csv"
+        local_path:  Path on your machine, e.g. "data/raw/fbref_stats_all_players.csv"
+        object_key:  Destination path inside the bucket, e.g. "raw/fbref_stats_all_players.csv"
         bucket:      Bucket name (defaults to MINIO_BUCKET env var)
     """
     client = get_client()
     local_path = Path(local_path)
-    print(f"  ↑ Uploading '{local_path}' → s3://{bucket}/{object_key}")
+    print(f"  [UP] Uploading '{local_path}' -> s3://{bucket}/{object_key}")
     client.upload_file(str(local_path), bucket, object_key)
-    print(f"  ✓ Upload complete")
+    print(f"  [OK] Upload complete")
 
 
 def download_file(object_key: str, local_path: str | Path, bucket: str = _BUCKET) -> None:
@@ -72,16 +72,16 @@ def download_file(object_key: str, local_path: str | Path, bucket: str = _BUCKET
     Download a file from MinIO to a local path.
 
     Args:
-        object_key:  Source path inside the bucket, e.g. "raw/all_players.csv"
-        local_path:  Destination on your machine, e.g. "data/raw/all_players.csv"
+        object_key:  Source path inside the bucket, e.g. "raw/fbref_stats_all_players.csv"
+        local_path:  Destination on your machine, e.g. "data/raw/fbref_stats_all_players.csv"
         bucket:      Bucket name (defaults to MINIO_BUCKET env var)
     """
     client = get_client()
     local_path = Path(local_path)
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"  ↓ Downloading s3://{bucket}/{object_key} → '{local_path}'")
+    print(f"  [DN] Downloading s3://{bucket}/{object_key} -> '{local_path}'")
     client.download_file(bucket, object_key, str(local_path))
-    print(f"  ✓ Download complete")
+    print(f"  [OK] Download complete")
 
 
 def list_objects(prefix: str = "", bucket: str = _BUCKET) -> list[str]:
