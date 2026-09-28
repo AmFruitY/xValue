@@ -45,7 +45,7 @@ def run_etl(module_name: str) -> None:
     3. Imports the given module and calls its main() function.
 
     Args:
-        module_name: dotted module path, e.g. "etl.fbref_stats_all_players"
+        module_name: dotted module path, e.g. "etl.extract.fbref_stats_all_players"
     """
     os.chdir(PROJECT_DIR)
     if PROJECT_DIR not in sys.path:
@@ -82,7 +82,7 @@ with DAG(
     t_upload_landing = PythonOperator(
         task_id="upload_landing",
         python_callable=run_etl,
-        op_args=["etl.upload_landing"],
+        op_args=["etl.upload.upload_landing"],
         doc_md=(
             "Uploads static files from `data/landing/` to MinIO so PySpark can read them."
         ),
@@ -91,7 +91,7 @@ with DAG(
     t_fbref_stats_all_players = PythonOperator(
         task_id="fbref_stats_all_players",
         python_callable=run_etl,
-        op_args=["etl.fbref_stats_all_players"],
+        op_args=["etl.extract.fbref_stats_all_players"],
         doc_md=(
             "Scrapes FBref for player season stats across Big 5 leagues (2018–2023). "
             "Saves to `data/raw/fbref_stats_all_players.csv` and uploads to MinIO."
@@ -101,7 +101,7 @@ with DAG(
     t_download_u23 = PythonOperator(
         task_id="download_u23",
         python_callable=run_etl,
-        op_args=["etl.download_u23"],
+        op_args=["etl.extract.download_u23"],
         doc_md=(
             "Same FBref scrape as fbref_stats_all_players but filters to players aged under 23. "
             "Saves to `data/u23_players.csv`."
@@ -111,7 +111,7 @@ with DAG(
     t_understat_stats_all_players = PythonOperator(
         task_id="understat_stats_all_players",
         python_callable=run_etl,
-        op_args=["etl.understat_stats_all_players"],
+        op_args=["etl.extract.understat_stats_all_players"],
         doc_md=(
             "Scrapes Understat for player season stats across Big 5 leagues (2018–2023). "
             "Saves to `data/raw/understat_stats_all_players.csv` and uploads to MinIO."
@@ -122,7 +122,7 @@ with DAG(
     t_join_players = PythonOperator(
         task_id="join_players",
         python_callable=run_etl,
-        op_args=["etl.join_players"],
+        op_args=["etl.processing.join_players"],
         doc_md=(
             "Joins fbref_stats_all_players.csv with players.csv (Transfermarkt bios) on "
             "player name + birth year. Saves to `data/processed/all_players_joined.csv`.",
@@ -132,7 +132,7 @@ with DAG(
     t_limpieza = PythonOperator(
         task_id="limpieza_spark",
         python_callable=run_etl,
-        op_args=["etl.limpieza_spark"],
+        op_args=["etl.processing.limpieza_spark"],
         doc_md=(
             "PySpark job that cleans and validates datasets from the landing zone in MinIO. "
             "Writes trusted data back to MinIO as Parquet files."
@@ -143,7 +143,7 @@ with DAG(
     t_market_value = PythonOperator(
         task_id="extract_market_value",
         python_callable=run_etl,
-        op_args=["etl.extract_player_market_value"],
+        op_args=["etl.processing.extract_player_market_value"],
         doc_md=(
             "Extracts player name, league, and market value from the joined dataset. "
             "Saves to `data/processed/player_market_value.csv`."
@@ -153,7 +153,7 @@ with DAG(
     t_exploitation = PythonOperator(
         task_id="exploitation_zone",
         python_callable=run_etl,
-        op_args=["etl.exploitation_zone"],
+        op_args=["etl.processing.exploitation_zone"],
         doc_md=(
             "Builds the exploitation zone from the trusted DuckDB: injury features, "
             "market value features, and KPI segments. Exports Parquet files."

@@ -24,7 +24,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Load variables from .env.local (next to this file's project root)
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# etl/shared/minio_client.py → parent = etl/shared, parent.parent = etl, parent.parent.parent = project root
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 load_dotenv(_PROJECT_ROOT / ".env.local")
 
 # ── Read config from environment ────────────────────────────────────────────

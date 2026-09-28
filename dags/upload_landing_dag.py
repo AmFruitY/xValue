@@ -1,15 +1,29 @@
 """
 upload_landing_dag.py
 ─────────────────────
-Airflow DAG that uploads static files from the local `data/landing/` folder
-to MinIO so that downstream PySpark jobs can read them via the S3 API.
+Airflow DAG that manages the full Landing Zone ingestion pipeline in MinIO.
 
-This DAG is the first of three specialised pipelines that replace the
-monolithic xvalue_etl_pipeline:
+Two-stage approach
+──────────────────
+  Stage 1 — Temporal Landing Zone
+      upload_temporal_landing
+      Reads CSV files from  data/landing/  on disk and uploads them to
+      MinIO under  landing/temporal/ .  No transformation — raw data as-is.
 
+  Stage 2 — Persistent Landing Zone
+      csv_to_parquet_landing
+      Reads every CSV from  landing/temporal/  in MinIO, converts it to
+      Parquet (snappy-compressed), and writes it to  landing/persistent/ .
+      This is the canonical format for all downstream PySpark / DuckDB jobs.
+
+Pipeline graph
+──────────────
+  upload_temporal_landing  ──▶  csv_to_parquet_landing
+
+This DAG is one of three that replace the monolithic xvalue_etl_pipeline:
     1. upload_landing_dag   ← you are here
-    2. download_dag         (downloads raw data from FBref / Understat / etc.)
-    3. processing_dag       (cleans, joins, and builds the exploitation zone)
+    2. download_dag         (FBref / Understat / U23 scrapers)
+    3. processing_dag       (join → clean → exploit)
 
 Schedule: @weekly (every Monday at 00:00), also triggerable manually.
 """
@@ -23,7 +37,6 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 # ── Project root inside the container ────────────────────────────────────────
-# The docker-compose bind mount puts the project at /opt/airflow/project
 PROJECT_DIR = "/opt/airflow/project"
 
 
@@ -43,8 +56,7 @@ def run_etl(module_name: str) -> None:
         sys.path.insert(0, PROJECT_DIR)
 
     module = importlib.import_module(module_name)
-    # Reload in case Airflow reuses the process across runs
-    importlib.reload(module)
+    importlib.reload(module)   # Reload in case Airflow reuses the process
     module.main()
 
 
@@ -62,30 +74,43 @@ default_args = {
 with DAG(
     dag_id="upload_landing_dag",
     description=(
-        "Uploads static files from data/landing/ to the MinIO landing zone. "
-        "Run this before any downstream processing DAG."
+        "Two-stage landing zone: uploads CSVs to MinIO (temporal), "
+        "then converts them to Parquet (persistent)."
     ),
     default_args=default_args,
     start_date=datetime(2024, 1, 1),
     schedule="@weekly",   # Runs every Monday — also triggerable manually
-    catchup=False,        # Don't backfill missed runs
+    catchup=False,
     tags=["xvalue", "minio", "landing"],
 ) as dag:
 
-    # ── Upload static landing files to MinIO ──────────────────────────────
-    t_upload_landing = PythonOperator(
-        task_id="upload_landing",
+    # ── Stage 1: upload CSVs → landing/temporal/ ─────────────────────────
+    t_upload_temporal = PythonOperator(
+        task_id="upload_temporal_landing",
         python_callable=run_etl,
-        op_args=["etl.upload_landing"],
+        op_args=["etl.upload.upload_landing"],
         doc_md=(
-            "Iterates over every file inside `data/landing/` and uploads it to "
-            "MinIO under the `landing/` prefix. "
-            "PySpark and DuckDB jobs in the processing DAG read from this prefix."
+            "Scans `data/landing/` on disk for CSV files and uploads them to "
+            "MinIO under `landing/temporal/`.  No transformation is applied — "
+            "this is the raw, as-received data."
+        ),
+    )
+
+    # ── Stage 2: convert CSVs → Parquet in landing/persistent/ ──────────
+    t_csv_to_parquet = PythonOperator(
+        task_id="csv_to_parquet_landing",
+        python_callable=run_etl,
+        op_args=["etl.upload.csv_to_parquet_landing"],
+        doc_md=(
+            "Reads every CSV from `landing/temporal/` in MinIO, converts it to "
+            "Parquet (snappy-compressed) using pandas + pyarrow, and writes the "
+            "result to `landing/persistent/`.  Downstream PySpark / DuckDB jobs "
+            "read from this persistent prefix."
         ),
     )
 
     # ── Pipeline graph ────────────────────────────────────────────────────
     #
-    #   upload_landing   (single task — no dependencies)
+    #   upload_temporal_landing  ──▶  csv_to_parquet_landing
     #
-    t_upload_landing
+    t_upload_temporal >> t_csv_to_parquet

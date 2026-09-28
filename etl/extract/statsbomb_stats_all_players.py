@@ -17,7 +17,7 @@ import pandas as pd
 from pathlib import Path
 from statsbombpy import sb
 
-from etl.minio_client import upload_file
+from etl.shared.minio_client import upload_file
 
 # ---------------------------------------------------------------------------
 # WHICH FREE COMPETITION/SEASONS TO USE

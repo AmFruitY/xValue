@@ -9,7 +9,7 @@ import pandas as pd
 import soccerdata as sd
 from pathlib import Path
 
-from etl.minio_client import upload_file
+from etl.shared.minio_client import upload_file
 
 LEAGUES = ["Big 5 European Leagues Combined"]
 
