@@ -156,8 +156,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-# [PENDIENTE: subir el archivo best_model_2.joblib al repositorio]
-model = joblib.load("best_model_2.joblib")
+model = joblib.load("xvalue_xgb.joblib")
 
 # X debe contener las mismas columnas numéricas y categóricas usadas en el entrenamiento
 X = pd.read_parquet("jugadores.parquet")
