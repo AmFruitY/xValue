@@ -9,26 +9,49 @@ Final Master's Project for UPC Data Science and Engineering. A way to give footb
 ```
 xValue/
 ├── dags/
-│   └── xvalue_pipeline.py  # Airflow DAG (schedules ETL runs)
+│   ├── upload_landing_dag.py      # Airflow DAG for landing zone uploads
+│   └── xvalue_pipeline.py         # Airflow DAG (schedules full ETL runs)
 ├── data/
 │   ├── raw/          # Downloaded data (gitignored — stored in MinIO)
 │   └── processed/    # Cleaned/merged data (gitignored — stored in MinIO)
-├── etl/              # Scripts to download, clean, and upload data
-│   ├── download_stats.py          # Fetches all-age player stats from FBref
-│   ├── download_u23.py            # Fetches U23 player stats from FBref
-│   ├── join_players.py            # Joins FBref stats with Transfermarkt bios
-│   ├── extract_player_market_value.py  # Extracts market value subset
-│   ├── limpieza_datos.py          # Cleans landing zone data into trusted zone
-│   ├── exploitation_zone.py       # Builds feature tables for modelling
-│   └── minio_client.py            # Reusable MinIO/S3 upload-download helper
+├── etl/              # ETL pipeline — organized into subpackages
+│   ├── extract/      # Data extraction from external sources
+│   │   ├── download_u23.py                  # Fetches U23 player stats from FBref
+│   │   ├── fbref_stats_all_players.py       # Fetches all-age player stats from FBref
+│   │   ├── statsbomb_stats_all_players.py   # Fetches stats from StatsBomb
+│   │   └── understat_stats_all_players.py   # Fetches stats from Understat
+│   ├── processing/   # Data cleaning and transformation
+│   │   ├── exploitation_zone.py             # Builds feature tables for modelling
+│   │   ├── extract_player_market_value.py   # Extracts market value subset
+│   │   ├── join_players.py                  # Joins FBref stats with Transfermarkt bios
+│   │   ├── limpieza_datos.py                # Cleans landing zone data into trusted zone
+│   │   └── limpieza_spark.py                # PySpark cleaning into Parquet (trusted zone)
+│   ├── shared/       # Shared utilities
+│   │   └── minio_client.py                  # Reusable MinIO/S3 upload-download helper
+│   └── upload/       # Data upload to storage
+│       ├── csv_to_parquet_landing.py        # Converts CSVs to Parquet for landing zone
+│       └── upload_landing.py                # Uploads raw files to MinIO landing zone
 ├── models/           # Trained model artefacts
+│   ├── xvalue_xgb.joblib  # Serialised XGBoost pipeline
+│   └── README.md          # Model card (hyperparameters, evaluation, intended use)
 ├── notebooks/        # Exploratory analysis
-├── reports/          # Figures and outputs
-├── xValue/           # Core Python module
-├── Dockerfile.airflow  # Custom Airflow image with project dependencies
+├── references/       # External references and literature
+├── reports/
+│   └── figures/      # Generated plots and output figures
+├── test/             # Ad-hoc scripts and data used during development
+├── xValue/           # Core Python package
+│   ├── config.py          # Project-wide configuration
+│   ├── dataset.py         # Dataset loading and preparation
+│   ├── features.py        # Feature engineering utilities
+│   ├── plots.py           # Plotting helpers
+│   └── modeling/
+│       ├── train.py       # Model training entry-point
+│       └── predict.py     # Inference / prediction entry-point
+├── Dockerfile.airflow     # Custom Airflow image with project dependencies
 ├── docker-compose.yml
+├── pyproject.toml
 ├── requirements.txt
-└── .env.example        # Template for required environment variables
+└── .env.example           # Template for required environment variables
 ```
 
 ---
