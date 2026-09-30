@@ -1,0 +1,24 @@
+{
+  "IMPORTANT": "Synthetic UI-development metadata. Not an experimental TFM result.",
+  "model_name": "xValue Mock Regressor",
+  "model_version": "xvalue-mock-v0.1",
+  "target": "market_value_eur",
+  "prediction_output": "xvalue_eur",
+  "snapshot_date": "2026-09-14",
+  "season": "2026/27",
+  "n_players": 250,
+  "leagues": [
+    "Premier League",
+    "LaLiga",
+    "Serie A",
+    "Bundesliga",
+    "Ligue 1"
+  ],
+  "mock_test_metrics": {
+    "MAE_EUR": 3150000,
+    "RMSE_EUR": 4980000,
+    "MAPE": 0.218,
+    "R2": 0.81
+  },
+  "note": "Metrics are fictitious placeholders for frontend design only and must be replaced by Alejandro's real model evaluation."
+}

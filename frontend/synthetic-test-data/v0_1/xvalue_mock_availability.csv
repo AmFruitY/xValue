@@ -1,0 +1,251 @@
+﻿player_id,player_name,injury_events_24m,days_missed_365,availability_pct,last_injury_type,coverage_note,data_mode
+XV0001,Emil Santos,1,4,98.9,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0002,Ivan Kraus,2,19,94.8,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0003,Bruno Conti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0004,Tomás Novak,1,19,94.8,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0005,Matteo Bertrand,2,32,91.2,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0006,Rayan Fontana,2,12,96.7,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0007,Elias Mercier,1,10,97.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0008,Javier Marković,1,23,93.7,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0009,Tiago Dupont,2,38,89.6,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0010,Noah Baumann,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0011,Mateo Neumann,1,22,94.0,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0012,Bruno Bellanova,1,4,98.9,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0013,Jan Petrović,2,13,96.4,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0014,Álex Kovač,2,25,93.2,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0015,Yanis Lenz,1,7,98.1,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0016,Yanis Ortega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0017,Tomás Silva,1,3,99.2,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0018,Tiago Moretti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0019,Jan Hartmann,2,17,95.3,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0020,Jan Vega,1,4,98.9,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0021,Rayan Savić,1,1,99.7,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0022,Davide Ferri,1,14,96.2,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0023,Lorenzo Hartmann,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0024,Tomás Mercier,2,18,95.1,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0025,Jonas Marković,2,27,92.6,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0026,Jan Santos,2,24,93.4,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0027,Ivan Savić,2,20,94.5,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0028,Javier Savić,1,22,94.0,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0029,Jonas Fontana,1,7,98.1,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0030,Yanis Garnier,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0031,Dario Esposito,2,25,93.2,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0032,Sergio Romero,1,24,93.4,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0033,Tiago Lemoine,2,16,95.6,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0034,Jan Moretti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0035,Sergio Lenz,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0036,Oskar Lenz,2,29,92.1,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0037,Marco Savić,1,9,97.5,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0038,Álex Garnier,1,24,93.4,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0039,Mika Laurent,1,1,99.7,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0040,Ivan Marini,3,54,85.2,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0041,Pablo Greco,3,28,92.3,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0042,Adrián Esposito,3,40,89.0,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0043,Davide Keller,2,41,88.8,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0044,Malik Conti,1,16,95.6,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0045,Daniel Fontana,1,10,97.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0046,Milo Roux,2,26,92.9,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0047,Leo Costa,3,9,97.5,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0048,Davide Marini,1,5,98.6,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0049,Rafael Conti,1,11,97.0,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0050,Marco Ilić,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0051,Sergio Babić,1,7,98.1,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0052,Davide Conti,1,35,90.4,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0053,Antoine Keller,2,30,91.8,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0054,Jan Horvat,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0055,Bruno Pereira,1,9,97.5,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0056,Adrián Navarro,1,1,99.7,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0057,Tiago Kraus,3,38,89.6,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0058,Daniel Jovanović,2,24,93.4,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0059,Samuel Lenz,1,11,97.0,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0060,Mika Dupont,1,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0061,Thiago Fischer,2,16,95.6,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0062,Daniel Vogel,2,20,94.5,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0063,Nico Hartmann,4,36,90.1,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0064,Leo Greco,3,47,87.1,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0065,Bruno Vogel,2,34,90.7,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0066,Malik Esposito,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0067,Martín Vogel,1,8,97.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0068,Nico Keller,2,22,94.0,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0069,Nico Marković,3,19,94.8,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0070,Enzo Vega,2,35,90.4,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0071,Malik Petrović,2,13,96.4,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0072,Malik Greco,2,44,87.9,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0073,Daniel Conti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0074,Elias Petrović,1,3,99.2,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0075,Milo Moretti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0076,Emil Silva,2,10,97.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0077,Rayan Vogel,2,13,96.4,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0078,Álex Mercier,1,12,96.7,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0079,Tiago Garnier,1,12,96.7,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0080,Martín Baumann,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0081,Antoine Bertrand,2,5,98.6,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0082,Davide Schneider,1,19,94.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0083,Nils Dupont,1,24,93.4,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0084,Felix Savić,1,19,94.8,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0085,Marek Savić,1,9,97.5,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0086,Hugo Costa,1,19,94.8,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0087,Marco Fischer,1,14,96.2,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0088,Elias Marini,1,9,97.5,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0089,Louis Lemoine,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0090,Marco Pereira,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0091,Lorenzo Novak,1,3,99.2,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0092,Theo Neumann,3,52,85.8,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0093,Nils Savić,3,84,77.0,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0094,Mika Savić,2,10,97.3,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0095,Antoine Ortega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0096,Louis Vega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0097,Ivan Marchand,2,14,96.2,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0098,Milo Garnier,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0099,Iker Molina,1,25,93.2,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0100,Lucas Navarro,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0101,Lorenzo Faure,2,0,100,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0102,Nico Conti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0103,Jonas Neumann,1,24,93.4,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0104,Tomás Keller,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0105,Álex Lenz,1,19,94.8,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0106,Noah Ricci,2,9,97.5,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0107,Jonas Kraus,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0108,João Roux,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0109,João Berger,3,32,91.2,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0110,Mateo Morales,2,25,93.2,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0111,Thiago Ricci,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0112,Julien Silva,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0113,Martín Jovanović,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0114,Mika Molina,1,7,98.1,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0115,Iker Vega,3,19,94.8,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0116,Álex Costa,3,16,95.6,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0117,Nikola Esposito,2,31,91.5,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0118,Samuel Faure,1,8,97.8,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0119,Thiago Roux,3,55,84.9,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0120,Noah Vega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0121,Mateo Navarro,2,48,86.8,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0122,Andrej Rossi,1,6,98.4,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0123,Jan Ricci,2,18,95.1,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0124,Malik Romero,3,72,80.3,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0125,João Jovanović,2,36,90.1,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0126,Martín Popović,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0127,Tiago Ferri,1,34,90.7,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0128,Thiago Faure,2,15,95.9,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0129,Louis Bertrand,1,9,97.5,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0130,Sergio Pereira,1,0,100,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0131,Noah Conti,2,14,96.2,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0132,Bruno Babić,1,2,99.5,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0133,João Greco,2,29,92.1,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0134,Rafael Bellanova,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0135,Lucas Neumann,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0136,Tomás Ferri,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0137,Nikola Horvat,2,31,91.5,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0138,Lucas Ortega,2,8,97.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0139,Jan Bertrand,2,55,84.9,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0140,Mateo Greco,2,12,96.7,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0141,Nico Esposito,2,26,92.9,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0142,Rafael Moretti,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0143,Enzo Silva,2,25,93.2,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0144,Rayan Horvat,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0145,Daniel Faure,1,22,94.0,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0146,João Moreau,1,9,97.5,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0147,Samuel Lemoine,2,30,91.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0148,Andrej Hartmann,2,18,95.1,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0149,Gael Costa,3,15,95.9,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0150,Iker Faure,1,14,96.2,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0151,Theo Keller,1,14,96.2,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0152,Noah Greco,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0153,Dario Fischer,2,32,91.2,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0154,Tomás Ilić,2,23,93.7,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0155,Antoine Faure,1,12,96.7,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0156,Julien Kraus,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0157,Nico Ricci,2,30,91.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0158,Theo Jovanović,1,10,97.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0159,Jan Moreau,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0160,Jonas Marini,1,7,98.1,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0161,Yanis Santos,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0162,Antoine Petrović,3,40,89.0,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0163,Sergio Santos,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0164,Pablo Keller,1,0,100,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0165,Gael Vega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0166,Tomás Baumann,2,24,93.4,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0167,Milo Lemoine,2,29,92.1,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0168,Pablo Laurent,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0169,Davide Molina,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0170,Javier Horvat,1,14,96.2,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0171,Noah Marković,1,0,100,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0172,Antoine Novak,2,42,88.5,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0173,Hugo Ilić,1,28,92.3,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0174,Nikola Schneider,3,49,86.6,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0175,Marek Schneider,2,34,90.7,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0176,Rafael Kovač,3,25,93.2,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0177,Antoine Neumann,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0178,Pablo Ferri,3,28,92.3,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0179,Hugo Conti,1,0,100,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0180,Leo Kovač,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0181,Louis Molina,2,10,97.3,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0182,André Greco,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0183,Marek Ferri,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0184,Theo Dupont,3,64,82.5,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0185,Pablo Marchand,1,1,99.7,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0186,Lucas Marini,1,14,96.2,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0187,Iker Conti,2,32,91.2,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0188,Enzo Bellanova,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0189,Malik Neumann,1,14,96.2,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0190,Milo Greco,1,24,93.4,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0191,Davide Horvat,2,40,89.0,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0192,Adrián Savić,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0193,Bruno Garnier,1,35,90.4,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0194,Tiago Greco,2,21,94.2,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0195,Marek Ilić,3,22,94.0,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0196,Marek Kovač,1,10,97.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0197,Javier Costa,1,8,97.8,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0198,Hugo Mercier,1,15,95.9,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0199,Mateo Bellanova,2,18,95.1,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0200,André Garnier,1,24,93.4,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0201,Iker Jovanović,2,11,97.0,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0202,Iker Bellanova,1,17,95.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0203,Tomás Marini,1,17,95.3,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0204,Emil Jovanović,1,1,99.7,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0205,Mateo Savić,1,16,95.6,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0206,Oskar Ilić,1,27,92.6,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0207,Bruno Ortega,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0208,Dario Baumann,2,23,93.7,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0209,Emil Kraus,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0210,Adrián Keller,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0211,Dario Faure,2,24,93.4,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0212,Gael Schneider,2,5,98.6,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0213,Tomás Marchand,1,15,95.9,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0214,Rafael Moreau,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0215,Hugo Garnier,1,24,93.4,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0216,Yanis Greco,1,13,96.4,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0217,Gael Conti,1,27,92.6,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0218,Malik Pereira,3,53,85.5,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0219,Rayan Marchand,2,21,94.2,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0220,Nils Ilić,3,45,87.7,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0221,Dario Novak,1,4,98.9,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0222,Andrej Ortega,1,15,95.9,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0223,Tomás Neumann,1,8,97.8,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0224,Adrián Jovanović,1,17,95.3,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0225,Jonas Lenz,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0226,Andrej Silva,1,16,95.6,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0227,Daniel Marchand,2,9,97.5,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0228,Matteo Berger,1,11,97.0,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0229,Rayan Jovanović,2,41,88.8,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0230,Bruno Greco,1,0,100,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0231,Samuel Bellanova,1,11,97.0,Illness,Synthetic mock availability data; complementary only,synthetic_mock
+XV0232,Rafael Bertrand,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0233,Adrián Morales,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0234,Luca Dupont,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0235,Milo Moreau,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0236,Nils Hartmann,2,37,89.9,Knee,Synthetic mock availability data; complementary only,synthetic_mock
+XV0237,Jonas Novak,1,5,98.6,Adductor,Synthetic mock availability data; complementary only,synthetic_mock
+XV0238,Thiago Ortega,3,48,86.8,Hamstring,Synthetic mock availability data; complementary only,synthetic_mock
+XV0239,Martín Ricci,1,22,94.0,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0240,Andrej Costa,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0241,Noah Ortega,1,21,94.2,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0242,Pablo Novak,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0243,Tiago Molina,1,6,98.4,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0244,Marco Keller,1,19,94.8,Ankle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0245,Theo Romero,1,23,93.7,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0246,Enzo Novak,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
+XV0247,Álex Faure,1,2,99.5,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0248,Hugo Dupont,1,0,100,Foot,Synthetic mock availability data; complementary only,synthetic_mock
+XV0249,Hugo Baumann,2,17,95.3,Muscle,Synthetic mock availability data; complementary only,synthetic_mock
+XV0250,Andrej Popović,0,0,100,None recorded,Synthetic mock availability data; complementary only,synthetic_mock
