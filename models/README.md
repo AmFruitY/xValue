@@ -60,7 +60,7 @@ Desarrollado en el marco de un Trabajo Fin de Máster (TFM).
 - **Dependencia del periodo.** El mercado de fichajes cambia con el tiempo (inflación
   de fees, nuevos actores). Las predicciones sobre periodos fuera del rango de
   entrenamiento pueden ser poco fiables.
-- [PENDIENTE: cobertura de ligas y temporadas incluidas]
+- Incluye las temporadas desde 2010/2011 hasta 2024/2025 de las 5 principales ligas de Europa (La Liga, Premier League, Bundesliga, Serie A y Ligue One)
 
 ## Datos de entrenamiento
 
