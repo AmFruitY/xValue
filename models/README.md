@@ -1,7 +1,7 @@
 ---
 language:
 - es
-license: [PENDIENTE: p. ej. mit, apache-2.0, cc-by-4.0]
+license: cc-by-nc-4.0
 library_name: xgboost
 pipeline_tag: tabular-regression
 tags:
@@ -20,10 +20,10 @@ Regresor XGBoost que estima el importe (fee) de un fichaje de fútbol a partir d
 rendimiento acumulado del jugador, su perfil y su historial de lesiones.
 Desarrollado en el marco de un Trabajo Fin de Máster (TFM).
 
-- **Autor:** [PENDIENTE]
-- **Institución / máster:** [PENDIENTE]
-- **Versión:** [PENDIENTE]
-- **Contacto:** [PENDIENTE]
+- **Autor:** Alejandro Diaz & Joshua Lorenzana & Sebastian Saldias
+- **Institución / máster:** Universidad Politécnica de Cataluña - Máster en Big Data, Data Science & Engineering
+- **Versión:** 1
+- **Contacto:** alexdiruz@gmail.com
 
 ## Detalles del modelo
 
@@ -112,8 +112,19 @@ Desarrollado en el marco de un Trabajo Fin de Máster (TFM).
 | `reg_alpha` | 0.5, 1.0, 1.5, 2.0 |
 | `reg_lambda` | 2, 3, 5 |
 
-- **Mejores hiperparámetros:** [PENDIENTE: pegar `random_search_2.best_params_`]
-- **Hardware / tiempo de entrenamiento:** [PENDIENTE]
+- **Mejores hiperparámetros:**
+| Hiperparámetro | Valor |
+|---|---|
+| `subsample` | 0.8 |
+| `reg_lambda` | 5 |
+| `reg_alpha` | 0.5 |
+| `n_estimators` | 1500 |
+| `min_child_weight` | 7 |
+| `max_depth` | 5 |
+| `learning_rate` | 0.05 |
+| `colsample_bytree` | 0.5 |
+
+- **Hardware / tiempo de entrenamiento:** 5m 16.4s
 
 ## Evaluación
 
@@ -158,5 +169,12 @@ fee_estimado = np.expm1(pred_log)  # fee estimado en euros
 ## Citación
 
 ```bibtex
-[PENDIENTE: BibTeX de la memoria del TFM]
+@mastersthesis{2026xvalue,
+  author  = {Diaz, Alejandro and Lorenzana, Joshua and Saldias, Sebastian},
+  title   = {[xValue]},
+  school  = {Universitat Politècnica de Catalunya},
+  type    = {Trabajo Final de Máster},
+  year    = {2026},
+  url     = {[enlace al repositorio UPCommons o a tu GitHub]}
+}
 ```
