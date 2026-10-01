@@ -7,7 +7,7 @@ Two-stage approach
 ──────────────────
   Stage 1 — Temporal Landing Zone
       upload_temporal_landing
-      Reads CSV files from  data/landing/  on disk and uploads them to
+      Reads CSV files from  data/raw/  on disk and uploads them to
       MinIO under  landing/temporal/ .  No transformation — raw data as-is.
 
   Stage 2 — Persistent Landing Zone
