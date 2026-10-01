@@ -3,7 +3,7 @@ upload_landing.py
 ─────────────────
 Stage 1 of the Landing Zone pipeline.
 
-Uploads CSV files from the local `data/landing/` folder to MinIO under the
+Uploads CSV files from the local `data/raw/` folder to MinIO under the
 `landing/temporal/` prefix.  This is the *Temporal Landing Zone* — raw CSVs
 exactly as produced by the scrapers / external sources, with no transformation.
 
@@ -15,7 +15,7 @@ from pathlib import Path
 from etl.shared.minio_client import upload_file
 
 # Local directory that contains the raw CSV files
-LANDING_DIR = Path("data/landing")
+LANDING_DIR = Path("data/raw")
 
 # MinIO prefix for the Temporal Landing Zone
 TEMPORAL_PREFIX = "landing/temporal"
@@ -25,6 +25,8 @@ def main() -> None:
     if not LANDING_DIR.exists():
         print(f"[WARN] Directory '{LANDING_DIR}' does not exist. Nothing to upload.")
         return
+
+    # Walk all subdirectories — raw/ is split by league and source
 
     csv_files = [f for f in LANDING_DIR.rglob("*") if f.is_file() and f.suffix.lower() == ".csv"]
 
