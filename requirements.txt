@@ -6,3 +6,6 @@ pyspark
 statsbombpy
 duckdb
 pyarrow
+undetected-chromedriver
+selenium
+beautifulsoup4

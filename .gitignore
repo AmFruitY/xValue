@@ -6,7 +6,13 @@ test/
 .env.local
 
 # Data files — stored in MinIO, not in Git
-data/raw/
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/current_season/
+data/raw/current_season/*
+!data/raw/current_season/**/
+!data/raw/current_season/**/.gitkeep
+data/interim/
 data/processed/
 downloaded_files/
 
@@ -16,3 +22,6 @@ dags/__pycache__/
 
 # ETL cache
 etl/__pycache__/
+
+# VM
+ssh/

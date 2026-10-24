@@ -17,6 +17,7 @@ Usage example
                   local_path="data/raw/fbref_stats_all_players.csv")
 """
 
+import io
 import os
 import boto3
 from botocore.client import Config
@@ -65,6 +66,42 @@ def upload_file(local_path: str | Path, object_key: str, bucket: str = _BUCKET) 
     local_path = Path(local_path)
     print(f"  [UP] Uploading '{local_path}' -> s3://{bucket}/{object_key}")
     client.upload_file(str(local_path), bucket, object_key)
+    print(f"  [OK] Upload complete")
+
+
+def upload_bytes(
+    data: bytes | io.BytesIO,
+    object_key: str,
+    bucket: str = _BUCKET,
+    content_type: str = "application/octet-stream",
+) -> None:
+    """
+    Upload in-memory bytes or BytesIO stream directly to MinIO.
+
+    Args:
+        data:         bytes or BytesIO buffer
+        object_key:   Destination path inside the bucket
+        bucket:       Bucket name (defaults to MINIO_BUCKET env var)
+        content_type: MIME type of the object
+    """
+    client = get_client()
+    if isinstance(data, bytes):
+        body = io.BytesIO(data)
+        length = len(data)
+    else:
+        body = data
+        body.seek(0, io.SEEK_END)
+        length = body.tell()
+        body.seek(0)
+
+    print(f"  [UP] Uploading buffer ({length:,} bytes) -> s3://{bucket}/{object_key}")
+    client.put_object(
+        Bucket=bucket,
+        Key=object_key,
+        Body=body,
+        ContentLength=length,
+        ContentType=content_type,
+    )
     print(f"  [OK] Upload complete")
 
 
