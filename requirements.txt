@@ -2,9 +2,10 @@ soccerdata
 pandas
 boto3
 python-dotenv
-pyspark
+pyspark==4.0.1
 statsbombpy
 duckdb
+minio
 pyarrow
 undetected-chromedriver
 selenium

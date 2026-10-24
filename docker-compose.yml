@@ -76,6 +76,7 @@ services:
       - ./etl:/opt/airflow/project/etl
       - ./data:/opt/airflow/project/data
       - ./downloaded_files:/opt/airflow/project/downloaded_files
+      - spark_ivy_cache:/home/airflow/.ivy2
     working_dir: /opt/airflow/project
     entrypoint: /bin/bash
     command:
@@ -111,6 +112,8 @@ services:
       # Pass MinIO credentials so ETL tasks can upload files
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_ENDPOINT: http://minio:9000
       MINIO_BUCKET: ${MINIO_BUCKET}
     ports:
@@ -120,6 +123,7 @@ services:
       - ./etl:/opt/airflow/project/etl
       - ./data:/opt/airflow/project/data
       - ./downloaded_files:/opt/airflow/project/downloaded_files
+      - spark_ivy_cache:/home/airflow/.ivy2
     working_dir: /opt/airflow/project
     command: webserver
     healthcheck:
@@ -147,6 +151,8 @@ services:
       # Pass MinIO credentials so ETL tasks can upload files
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_ENDPOINT: http://minio:9000
       MINIO_BUCKET: ${MINIO_BUCKET}
     volumes:
@@ -154,6 +160,7 @@ services:
       - ./etl:/opt/airflow/project/etl
       - ./data:/opt/airflow/project/data
       - ./downloaded_files:/opt/airflow/project/downloaded_files
+      - spark_ivy_cache:/home/airflow/.ivy2
     working_dir: /opt/airflow/project
     command: scheduler
     restart: unless-stopped
@@ -162,4 +169,6 @@ volumes:
   minio_data:
     driver: local
   postgres_data:
+    driver: local
+  spark_ivy_cache:
     driver: local

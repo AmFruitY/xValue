@@ -25,3 +25,7 @@ etl/__pycache__/
 
 # VM
 ssh/
+
+# Python Cache 
+__pycache__/
+*.pyc
