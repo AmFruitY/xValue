@@ -228,8 +228,12 @@ def build_spark(uses_s3: bool) -> SparkSession:
         endpoint = minio_endpoint()
         builder = (
             builder
-            # Downloaded automatically the first time (large, then cached in ~/.ivy2)
+            # Downloaded automatically the first time (about 500 MB), then kept in
+            # ~/.ivy2. In Docker, mount a volume on that folder so it survives
+            # container restarts (Spark 4's own default, ~/.ivy2.5.2, would not).
             .config("spark.jars.packages", f"org.apache.hadoop:hadoop-aws:{hadoop_version()}")
+            .config("spark.jars.ivy", os.environ.get("SPARK_IVY_DIR",
+                                                     os.path.expanduser("~/.ivy2")))
             .config("spark.hadoop.fs.s3a.endpoint", endpoint)
             .config("spark.hadoop.fs.s3a.endpoint.region", "us-east-1")  # any value; MinIO ignores it
             .config("spark.hadoop.fs.s3a.access.key", os.environ["MINIO_ACCESS_KEY"])
