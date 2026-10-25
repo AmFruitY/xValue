@@ -1,24 +1,32 @@
 """
 fbref_current_stats_dag.py
 ──────────────────────────
-Airflow DAG representing the current-season FBref stats scraping and parsing
-pipeline for the Big 5 leagues.
+Airflow DAG for the current-season FBref stats of the Big 5 leagues:
+download → parse straight into the Landing Zone → clean to Trusted → verify.
 
 Note on VM Execution:
 ─────────────────────
 Real scraping (with xvfb and headless browsers) is run locally or outside the VM.
-In the VM, tasks in this DAG are represented using EmptyOperator so that the DAG
-graph and structure appear in the Airflow UI and runs complete cleanly without
+In the VM, the download and parse tasks are represented using EmptyOperator so
+that the DAG graph appears in the Airflow UI and runs complete cleanly without
 failing on missing display/browser dependencies.
 
-Stages Represented:
-───────────────────
-  Stage 1 — Download (one league after another, never in parallel):
-      download_fbref_<league>
-  Stage 2 — Parse:
-      parse_fbref
+The cleaning and verification tasks are REAL: they run inside the Airflow
+container and work on the current-season files in the MinIO Landing Zone.
 
-Schedule: @weekly (every Monday at 00:00), also triggerable manually.
+Stages:
+───────
+  Stage 1 — Download (one league after another, never in parallel):
+      download_fbref_<league>                                  (represented)
+  Stage 2 — Parse and land:
+      parse_fbref: HTML pages → one Parquet file per league, uploaded to
+      landing_zone/<league>/<league>_<season>_stats_fbref.parquet  (represented)
+  Stage 3 — Clean:
+      clean_to_trusted: current season, FBref stats only        (real)
+  Stage 4 — Verify:
+      verify_trusted: current season                            (real)
+
+Schedule: @weekly (Sunday at midnight), also triggerable manually.
 """
 
 from datetime import datetime, timedelta
@@ -28,6 +36,10 @@ try:
     from airflow.operators.empty import EmptyOperator
 except ImportError:
     from airflow.operators.dummy import DummyOperator as EmptyOperator
+try:                                                   # Airflow 3
+    from airflow.providers.standard.operators.bash import BashOperator
+except ImportError:                                    # Airflow 2
+    from airflow.operators.bash import BashOperator
 
 LEAGUES = [
     "eng-premier-league",
@@ -36,6 +48,9 @@ LEAGUES = [
     "ger-bundesliga",
     "ita-serie-a",
 ]
+
+# Where the repository is mounted inside the Airflow containers.
+SCRIPTS = "/opt/airflow/project/etl/processing"
 
 # ── Default task settings ────────────────────────────────────────────────────
 default_args = {
@@ -50,13 +65,14 @@ default_args = {
 # ── DAG definition ───────────────────────────────────────────────────────────
 with DAG(
     dag_id="fbref_current_stats_dag",
-    description="Downloads current-season FBref pages of the Big 5 leagues and parses them to CSV (display representation in VM).",
+    description="Current-season FBref stats of the Big 5 leagues: download, parse into the "
+                "Landing Zone, clean to the Trusted Zone and verify.",
     default_args=default_args,
     start_date=datetime(2024, 1, 1),
-    schedule="@weekly",   # Runs every Monday — also triggerable manually
+    schedule="@weekly",
     catchup=False,
     max_active_runs=1,
-    tags=["xvalue", "fbref", "scraping"],
+    tags=["xvalue", "fbref", "scraping", "trusted"],
 ) as dag:
 
     # ── Stage 1: download each league's pages → data/raw/html/<league>/ ──
@@ -72,20 +88,49 @@ with DAG(
         for league in LEAGUES
     ]
 
-    # ── Stage 2: parse the HTML pages → data/raw/current_season/<league>/*.csv ──
+    # ── Stage 2: parse the HTML pages straight into the Landing Zone ──
     t_parse = EmptyOperator(
         task_id="parse_fbref",
         doc_md=(
-            "Parses the saved FBref pages of every league into one CSV per league "
-            "(`data/raw/current_season/<league>/<league>_<season>_stats_fbref.csv`) and a dated "
-            "snapshot under `data/raw/snapshots/<league>/`."
+            "Parses the four saved pages of every league into one table per league "
+            "(one row per player per club) and uploads it as Parquet to the MinIO "
+            "Landing Zone: `xvalue-data/landing_zone/<league>/<league>_<season>_stats_fbref.parquet`. "
+            "This season's file is replaced every week: FBref's tables are season-to-date totals."
+        ),
+    )
+
+    # ── Stage 3: clean this season's FBref stats into the Trusted Zone (real) ──
+    # Only the folders league=<league>/season=<this season> are replaced;
+    # every historical season stays as it is.
+    t_clean = BashOperator(
+        task_id="clean_to_trusted",
+        bash_command=(
+            f"python -u {SCRIPTS}/clean_to_trusted.py "
+            "--seasons current --tables fbref_player_stats"
+        ),
+        execution_timeout=timedelta(minutes=30),
+        doc_md=(
+            "Runs the PySpark cleaning job on this season's FBref stats only. "
+            "A file that breaks a rule is not written and the task fails (red)."
+        ),
+    )
+
+    # ── Stage 4: verify this season in the Trusted Zone (real) ──
+    t_verify = BashOperator(
+        task_id="verify_trusted",
+        bash_command=f"python -u {SCRIPTS}/verify_trusted.py --seasons current",
+        retries=0,                          # the data won't change in 10 minutes
+        execution_timeout=timedelta(minutes=10),
+        doc_md=(
+            "Checks this season in the Trusted Zone: every league present, the right "
+            "clubs and the known values in `reference_checks.csv`. Any FAIL turns the task red."
         ),
     )
 
     # ── Pipeline graph ────────────────────────────────────────────────────
     #
-    #   download (eng) ──▶ download (esp) ──▶ ... ──▶ download (ita) ──▶ parse_fbref
+    #   download (eng) ──▶ ... ──▶ download (ita) ──▶ parse (→ Landing) ──▶ clean ──▶ verify
     #
     for upstream, downstream in zip(download_tasks, download_tasks[1:]):
         upstream >> downstream
-    download_tasks[-1] >> t_parse
+    download_tasks[-1] >> t_parse >> t_clean >> t_verify
