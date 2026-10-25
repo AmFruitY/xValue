@@ -49,6 +49,7 @@ THE CLEANING TECHNIQUES (one function each, applied in this order)
  2. fix_formats         age "25-363" -> 25, nation "es ESP" -> "ESP",
                         Days "45 days" -> 45, dates stored as text -> real dates
  3. fix_numbers         "1,234" -> 1234, "+12" -> 12: text -> real numbers
+ 3b. fix_impossible_values  SoT% above 100 -> recalculated from SoT / Sh
  4. set_league_season   league and season come from the landing PATH
                         (fixes the 2627 file that says 2526, missing leagues)
  5. remove_bad_rows     exact duplicates, rows without a player,
@@ -109,7 +110,9 @@ RULES = {
         text={"league", "season", "team", "player", "nation", "pos", "player_id", "team_id"},
         integers={"age", "born"},
         player="player", club="team", matches="MP", minutes="Min",
-        unique=[["player_id", "team_id"], ["player", "team"]],
+        # Old files have no IDs: two players with the same name at one club
+        # (e.g. two "Danilo"s) are told apart by their birth year.
+        unique=[["player_id", "team_id"], ["player", "team", "born"]],
         check_clubs=True),
     "understat_player_stats": dict(
         text={"league", "season", "team", "player", "position", "player_id", "team_id"},
@@ -387,6 +390,27 @@ def fix_numbers(df: DataFrame, rules: dict, problems: list) -> DataFrame:
     return df
 
 
+def fix_impossible_values(df: DataFrame, warnings: list) -> DataFrame:
+    """Technique 3b: REPAIR IMPOSSIBLE VALUES. A percentage above 100 can't be
+    right. Recalculate it from the raw counts when they make sense, otherwise
+    leave it empty. One wrong cell should not throw away a whole season."""
+    if all(c in df.columns for c in ("SoT%", "Sh", "SoT")):
+        bad = col("SoT%") > 100
+        n = df.filter(bad).count()
+        if n:
+            counts_ok = (col("Sh") > 0) & (col("SoT") <= col("Sh"))
+            df = df.withColumn("SoT%", F.when(bad & counts_ok, F.round(col("SoT") / col("Sh") * 100, 1))
+                                        .when(bad, None).otherwise(col("SoT%")))
+            warnings.append(f"{n} SoT% value(s) above 100: recalculated as SoT / Sh "
+                            f"(left empty where the counts are impossible too)")
+    if "Min%" in df.columns:
+        n = df.filter(col("Min%") > 100).count()
+        if n:
+            df = df.withColumn("Min%", F.when(col("Min%") > 100, None).otherwise(col("Min%")))
+            warnings.append(f"{n} Min% value(s) above 100: left empty")
+    return df
+
+
 def set_league_season(df: DataFrame, league: str, start: int, rules: dict,
                       warnings: list) -> DataFrame:
     """Technique 4: TRUST THE PATH. League and season are taken from the landing
@@ -487,13 +511,19 @@ def quality_checks(df: DataFrame, rules: dict, league: str | None,
         if clubs != expected:
             problems.append(f"{clubs} clubs, expected {expected}")
 
-    for key in rules["unique"] or []:
-        if all(c in df.columns for c in key) and \
-                df.filter(" OR ".join(f"`{c}` IS NULL" for c in key)).count() == 0:
-            dupes = df.groupBy(*key).count().filter("count > 1").count()
-            if dupes:
-                problems.append(f"{dupes} rows share the same {'+'.join(key)}")
-            break
+    # Use the first key that works: IDs only if every row has them;
+    # the last key (names) is always usable.
+    keys = [k for k in (rules["unique"] or []) if all(c in df.columns for c in k)]
+    for i, key in enumerate(keys):
+        last = i == len(keys) - 1
+        if not last and df.filter(" OR ".join(f"`{c}` IS NULL" for c in key)).count():
+            continue
+        dupes = df.groupBy(*[col(c) for c in key]).count().filter("count > 1")
+        n = dupes.count()
+        if n:
+            names = ", ".join(" / ".join(str(v) for v in r[:-1]) for r in dupes.limit(3).collect())
+            problems.append(f"{n} rows share the same {'+'.join(key)}: {names}")
+        break
 
     numeric = [f.name for f in df.schema.fields if isinstance(f.dataType, T.NumericType)
                and f.name not in ("season_start", "injury_season_start")]
@@ -534,6 +564,7 @@ def clean(spark, landing, table, rels, league=None, start=None) -> DataFrame | N
             df = df.unionByName(part, allowMissingColumns=True)
         df = fix_formats(df, problems)
         df = fix_numbers(df, rules, problems)
+        df = fix_impossible_values(df, warnings)
         if "is_loan" in df.columns:                      # True/False/"1"/"0" -> 1/0
             v = F.lower(col("is_loan").cast("string"))
             df = df.withColumn("is_loan", F.when(v.isin("1", "true", "1.0", "yes"), 1)
@@ -612,7 +643,10 @@ def main():
                 out = out.unionByName(df, allowMissingColumns=True)
             path = join_path(trusted, table)
             if not args.dry_run:
-                out.write.mode("overwrite").partitionBy("league", "season").parquet(path)
+                # repartition: gather each league-season's rows into ONE task, so each
+                # folder gets ONE file instead of several tiny ones.
+                (out.repartition("league", "season")
+                    .write.mode("overwrite").partitionBy("league", "season").parquet(path))
             written.append(f"{path}  ({len(good)} league-season folders)")
 
     # General tables: rebuilt completely (only in a full run, they have no season).
