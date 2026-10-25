@@ -261,8 +261,10 @@ def check_match_stats(con, root, starts):
         record("WARN", "match stats", f"{m}: table not found")
         return
     current = current_season_start()
+    # League matches only: play-offs (is_playoff) are extra matches by design.
     rows = con.sql(f"""SELECT league, season, season_start, count(DISTINCT game_id)
-                       FROM {source(root, m, starts)} GROUP BY ALL ORDER BY league, season_start""").fetchall()
+                       FROM {source(root, m, starts)} WHERE NOT coalesce(is_playoff, false)
+                       GROUP BY ALL ORDER BY league, season_start""").fetchall()
     bad, finished = [], 0
     for league, season, start, games in rows:
         if start >= current:
@@ -281,7 +283,7 @@ def check_match_stats(con, root, starts):
     rows = con.sql(f"""
         WITH m AS (SELECT league, season, season_start, player_key, team_key,
                           sum("Performance_Gls") g, sum("Performance_Ast") a
-                   FROM {source(root, m, starts)} GROUP BY ALL),
+                   FROM {source(root, m, starts)} WHERE NOT coalesce(is_playoff, false) GROUP BY ALL),
              s AS (SELECT league, season, player_key, team_key, sum("Gls") g, sum("Ast") a
                    FROM {source(root, 'fbref_player_stats', starts)} GROUP BY ALL)
         SELECT m.league, m.season, count(*) n,

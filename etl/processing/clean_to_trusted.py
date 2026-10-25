@@ -52,6 +52,7 @@ THE CLEANING TECHNIQUES (one function each, applied in this order)
                         Days "45 days" -> 45, dates stored as text -> real dates
  3. fix_numbers         "1,234" -> 1234, "+12" -> 12: text -> real numbers
  3b. fix_impossible_values  SoT% above 100 -> recalculated from SoT / Sh
+ 3c. fix_impossible_matches more matches than matchdays (one-club player) -> empty
  4. set_league_season   league and season come from the landing PATH
                         (fixes the 2627 file that says 2526, missing leagues)
  5. remove_bad_rows     exact duplicates, rows without a player,
@@ -60,6 +61,8 @@ THE CLEANING TECHNIQUES (one function each, applied in this order)
                         keep the most complete row
  6. add_helper_columns  player_key "Kylian Mbappé" -> "kylian mbappe" (for joins),
                         injury_season (the football season of an injury date)
+ 6c. mark_playoff_matches  match stats: relegation play-offs / tie-breakers get
+                        is_playoff = true (kept, not deleted)
  7. add_lineage         source_file and cleaned_at on every row
  8. quality_checks      any problem -> that file is NOT written, exit code 1
 
@@ -433,6 +436,26 @@ def fix_impossible_values(df: DataFrame, warnings: list) -> DataFrame:
     return df
 
 
+def fix_impossible_matches(df: DataFrame, rules: dict, league: str, start: int,
+                           warnings: list) -> DataFrame:
+    """Technique 3c: a one-club player can't play more league matches than there
+    are matchdays (e.g. Understat: David Soria, Getafe 2023-24, 39 of 38).
+    A few such cells are left empty, with a warning naming the players.
+    More than 5 means the file itself is suspect: it is left for the quality
+    checks to refuse."""
+    m, club = rules["matches"], rules["club"]
+    if not (m and club and rules["check_clubs"] and m in df.columns and club in df.columns):
+        return df
+    games = 2 * (expected_clubs(league, start) - 1)
+    bad = (~col(club).contains(",")) & (col(m) > games)
+    rows = df.filter(bad).select(rules["player"], club, m).collect()
+    if not rows or len(rows) > 5:
+        return df
+    who = ", ".join(f"{r[0]} ({r[1]}): {r[2]:g}" for r in rows)
+    warnings.append(f"{len(rows)} impossible '{m}' value(s) above {games} matchdays left empty: {who}")
+    return df.withColumn(m, F.when(bad, None).otherwise(col(m)))
+
+
 def set_league_season(df: DataFrame, league: str, start: int, rules: dict,
                       warnings: list) -> DataFrame:
     """Technique 4: TRUST THE PATH. League and season are taken from the landing
@@ -496,7 +519,9 @@ def remove_bad_rows(df: DataFrame, rules: dict, report: dict) -> DataFrame:
     report["no_player"] = before - df.count()
     if rules["matches"] in df.columns:
         before = df.count()
-        df = df.filter(F.coalesce(col(rules["matches"]), F.lit(0)) > 0)
+        # Only a real 0 means "never played"; an empty value (e.g. an impossible
+        # count left empty by fix_impossible_matches) keeps the row.
+        df = df.filter(col(rules["matches"]).isNull() | (col(rules["matches"]) > 0))
         report["no_matches"] = before - df.count()
     return df
 
@@ -555,7 +580,9 @@ def quality_checks(df: DataFrame, rules: dict, league: str | None,
     games = None
     if rules["check_clubs"]:
         # Understat writes a player who changed club as "Club A,Club B".
-        clubs = (df.select(F.explode(F.split(col(rules["club"]), ",")).alias("c"))
+        # Play-off opponents (e.g. a 2. Bundesliga club) are not league clubs.
+        league_rows = df.filter(~col("is_playoff")) if "is_playoff" in df.columns else df
+        clubs = (league_rows.select(F.explode(F.split(col(rules["club"]), ",")).alias("c"))
                    .select(F.trim("c")).distinct().count())
         expected = expected_clubs(league, start)
         games = 2 * (expected - 1)
@@ -606,14 +633,35 @@ def quality_checks(df: DataFrame, rules: dict, league: str | None,
     return problems
 
 
+def mark_playoff_matches(df: DataFrame, league: str, start: int, warnings: list) -> DataFrame:
+    """Technique 6c: FLAG PLAY-OFF MATCHES. Each club plays 2 x (clubs - 1)
+    league matches (38 or 34). Taking each club's matches in date order, any
+    match after that number is a play-off: e.g. the Bundesliga relegation
+    play-off against a 2. Bundesliga club, or Serie A's Spezia-Verona
+    tie-breaker (2022-23). They are kept, with is_playoff = true, so users
+    can include or exclude them. A postponed league match is never extra."""
+    from pyspark.sql import Window
+    per_club = 2 * (expected_clubs(league, start) - 1)
+    games = df.select("game_id", "team", "date", "game").distinct()
+    numbered = games.withColumn("n", F.row_number().over(
+        Window.partitionBy("team").orderBy("date", "game_id")))
+    extra = [r["game_id"] for r in numbered.filter(col("n") > per_club).select("game_id").distinct().collect()]
+    df = df.withColumn("is_playoff", col("game_id").isin(extra) if extra else F.lit(False))
+    if extra:
+        names = sorted({r["game"] for r in games.filter(col("game_id").isin(extra)).select("game").collect()})
+        warnings.append(f"{len(extra)} play-off match(es) flagged with is_playoff: {'; '.join(names[:4])}")
+    return df
+
+
 def check_matches(df: DataFrame, league: str, start: int) -> list[str]:
-    """Rules for match-level data (one row = one player in one match)."""
+    """Rules for match-level data (one row = one player in one match).
+    Club and match counts use league matches only (play-offs excluded)."""
     problems = []
     clubs = expected_clubs(league, start)
     games = df.groupBy("game_id").agg(F.countDistinct("team").alias("teams"))
-    n_games = games.count()
-    if n_games > clubs * (clubs - 1):
-        problems.append(f"{n_games} matches, but a season has only {clubs * (clubs - 1)}")
+    league_games = df.filter(~col("is_playoff")).select("game_id").distinct().count()
+    if league_games > clubs * (clubs - 1):
+        problems.append(f"{league_games} league matches, but a season has only {clubs * (clubs - 1)}")
     odd = games.filter("teams != 2")
     if odd.count():
         problems.append(f"{odd.count()} matches without exactly 2 clubs "
@@ -656,8 +704,11 @@ def clean(spark, landing, table, rels, league=None, start=None) -> DataFrame | N
                                .when(v.isin("0", "false", "0.0", "no"), 0).cast("int"))
         if league:
             df = set_league_season(df, league, start, rules, warnings)
+            df = fix_impossible_matches(df, rules, league, start, warnings)
         df = remove_bad_rows(df, rules, report)
         df = resolve_repeated_players(df, warnings)
+        if rules.get("per_match"):
+            df = mark_playoff_matches(df, league, start, warnings)
         df = add_helper_columns(df)
         df = add_lineage(df, None).cache()
         problems += quality_checks(df, rules, league, start)
