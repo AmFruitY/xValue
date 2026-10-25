@@ -54,6 +54,8 @@ THE CLEANING TECHNIQUES (one function each, applied in this order)
                         (fixes the 2627 file that says 2526, missing leagues)
  5. remove_bad_rows     exact duplicates, rows without a player,
                         players who never played (0 matches)
+ 5b. resolve_repeated_players  same player listed twice (one copy with gaps):
+                        keep the most complete row
  6. add_helper_columns  player_key "Kylian Mbappé" -> "kylian mbappe" (for joins),
                         injury_season (the football season of an injury date)
  7. add_lineage         source_file and cleaned_at on every row
@@ -435,6 +437,35 @@ def set_league_season(df: DataFrame, league: str, start: int, rules: dict,
               .withColumn("season_start", F.lit(start)))
 
 
+def resolve_repeated_players(df: DataFrame, warnings: list) -> DataFrame:
+    """Technique 5b: KEEP THE MOST COMPLETE COPY. Old FBref files (no player IDs)
+    sometimes list the same appearance twice: one complete row and one copy
+    with gaps (e.g. no age/birth year). Adding them up would double-count, so
+    we keep ONE row: the one with the most filled-in values, then most minutes.
+    Only for rows with the same name and club whose birth years don't conflict
+    (same, or missing). Namesakes with different birth years are kept."""
+    if not {"player", "team", "born"} <= set(df.columns):
+        return df
+    if "player_id" in df.columns and df.filter(col("player_id").isNull()).count() == 0:
+        return df                                       # IDs available: nothing to guess
+    from pyspark.sql import Window
+    group = Window.partitionBy("player", "team")
+    filled = sum(F.when(col(c).isNotNull(), 1).otherwise(0) for c in df.columns)
+    minutes = col("Min") if "Min" in df.columns else F.lit(0)
+    ranked = (df.withColumn("_n", F.count("*").over(group))
+                .withColumn("_births", F.size(F.collect_set("born").over(group)))
+                .withColumn("_rank", F.row_number().over(
+                    group.orderBy(filled.desc(), F.coalesce(minutes, F.lit(0)).desc()))))
+    same_person = (col("_n") > 1) & (col("_births") <= 1)
+    dropped = ranked.filter(same_person & (col("_rank") > 1))
+    n = dropped.count()
+    if n:
+        names = sorted({f"{r['player']} ({r['team']})" for r in dropped.select("player", "team").collect()})
+        warnings.append(f"{n} repeated row(s) of the same player removed, most complete row kept: "
+                        f"{', '.join(names[:5])}{' ...' if len(names) > 5 else ''}")
+    return ranked.filter(~(same_person & (col("_rank") > 1))).drop("_n", "_births", "_rank")
+
+
 def remove_bad_rows(df: DataFrame, rules: dict, report: dict) -> DataFrame:
     """Technique 5: DEDUPLICATION AND FILTERING."""
     report["rows_in"] = df.count()
@@ -572,6 +603,7 @@ def clean(spark, landing, table, rels, league=None, start=None) -> DataFrame | N
         if league:
             df = set_league_season(df, league, start, rules, warnings)
         df = remove_bad_rows(df, rules, report)
+        df = resolve_repeated_players(df, warnings)
         df = add_helper_columns(df)
         df = add_lineage(df, None).cache()
         problems += quality_checks(df, rules, league, start)
