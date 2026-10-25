@@ -14,7 +14,8 @@ weekly Airflow run. Only the amount of data it processes changes:
 -----------------------------------------------------------------------
 WHAT IT READS (Landing Zone, never modified)
 -----------------------------------------------------------------------
-    landing_zone/<league>/<league>_<season>_stats_fbref.parquet
+    landing_zone/<league>/<league>_<season>_stats_fbref.parquet        (player x season)
+    landing_zone/<league>/<league>_<season>_matchstats_fbref.parquet   (player x match)
     landing_zone/<league>/<league>_<season>_stats_understat.parquet
     landing_zone/<league>/<league>_<season>_transfers_transfermarkt.parquet
     landing_zone/general/<name containing "injur" or "lesion">.parquet
@@ -25,7 +26,8 @@ WHAT IT READS (Landing Zone, never modified)
 -----------------------------------------------------------------------
 WHAT IT WRITES (Trusted Zone)
 -----------------------------------------------------------------------
-    trusted_zone/fbref_player_stats/league=<league>/season=<2025-26>/
+    trusted_zone/fbref_player_stats/league=<league>/season=<2025-26>/        one row = player x season
+    trusted_zone/fbref_player_match_stats/league=<league>/season=<2025-26>/  one row = player x match
     trusted_zone/understat_player_stats/league=<league>/season=<2025-26>/
     trusted_zone/transfers/league=<league>/season=<2025-26>/
     trusted_zone/injuries/
@@ -96,7 +98,8 @@ LEAGUES = ["eng-premier-league", "esp-la-liga", "ita-serie-a", "ger-bundesliga",
 
 # The end of a landing file name decides which Trusted table it belongs to.
 FILE_ENDINGS = {
-    "_stats_fbref": "fbref_player_stats",
+    "_stats_fbref": "fbref_player_stats",               # one row = player x season
+    "_matchstats_fbref": "fbref_player_match_stats",    # one row = player x match
     "_stats_understat": "understat_player_stats",
     "_transfers_transfermarkt": "transfers",
 }
@@ -116,6 +119,13 @@ RULES = {
         # (e.g. two "Danilo"s) are told apart by their birth year.
         unique=[["player_id", "team_id"], ["player", "team", "born"]],
         check_clubs=True),
+    "fbref_player_match_stats": dict(
+        text={"league", "season", "game", "team", "player", "nation", "pos", "game_id", "date"},
+        integers={"age", "jersey_number", "min"},
+        player="player", club="team", matches=None, minutes=None,
+        # A shirt number is unique within a team in one match; names as fallback.
+        unique=[["game_id", "team", "jersey_number"], ["game_id", "team", "player"]],
+        check_clubs=True, per_match=True),
     "understat_player_stats": dict(
         text={"league", "season", "team", "player", "position", "player_id", "team_id"},
         integers=set(),
@@ -226,6 +236,8 @@ def build_spark(uses_s3: bool) -> SparkSession:
         # A value that can't be converted becomes null (and is counted and
         # reported) instead of crashing the job. Spark 3.5 default; Spark 4 needs it.
         .config("spark.sql.ansi.enabled", "false")
+        # Dates that don't match a pattern simply become null (then reported).
+        .config("spark.sql.legacy.timeParserPolicy", "CORRECTED")
         # Overwrite ONLY the league/season folders being written, keep the rest.
         .config("spark.sql.sources.partitionOverwriteMode", "dynamic")
     )
@@ -336,13 +348,21 @@ def fix_formats(df: DataFrame, problems: list) -> DataFrame:
             df = df.withColumn(name, first_integer(name))
     if "nation" in df.columns:                          # "es ESP" -> "ESP"
         df = df.withColumn("nation", F.element_at(F.split("nation", " "), -1))
-    for name in [c for c in df.columns if c.endswith(("_parsed", "_date"))]:
+    for name in [c for c in df.columns if c == "date" or c.endswith(("_parsed", "_date"))]:
         if isinstance(df.schema[name].dataType, T.StringType):   # text -> real date
-            bad = df.filter(col(name).isNotNull() & F.to_date(col(name)).isNull()).count()
+            not_date = df.filter(col(name).isNotNull() & parse_date(name).isNull())
+            bad = not_date.count()
             if bad:
-                problems.append(f"{bad} values of '{name}' are not dates")
-            df = df.withColumn(name, F.to_date(col(name)))
+                example = not_date.select(name).first()[0]
+                problems.append(f"{bad} values of '{name}' are not dates (e.g. '{example}')")
+            df = df.withColumn(name, parse_date(name))
     return df
+
+
+def parse_date(name: str):
+    """'2023-10-29' (ISO, FBref) or '3/29/2024' (US month/day/year, Transfermarkt
+    injuries: values like 3/29 and 12/29 prove the month comes first)."""
+    return F.coalesce(F.to_date(col(name)), F.to_date(col(name), "M/d/yyyy"))
 
 
 def as_number(name: str):
@@ -568,13 +588,47 @@ def quality_checks(df: DataFrame, rules: dict, league: str | None,
         over = [c for c in PERCENT_COLUMNS if c in numeric and (lim[f"max|{c}"] or 0) > 100]
         if over:
             problems.append(f"percentages above 100 in {over}")
-        if games:
-            top_matches = lim.get(f"max|{rules['matches']}") or 0
-            top_minutes = lim.get(f"max|{rules['minutes']}") or 0
-            if top_matches > games:
-                problems.append(f"{rules['matches']} up to {top_matches:g}, season has {games} matchdays")
-            if top_minutes > games * 100:
-                problems.append(f"{rules['minutes']} up to {top_minutes:g}, impossible in {games} matches")
+        if games and rules["matches"]:
+            # A player who moved between two clubs of the same league (Understat
+            # writes "Club A,Club B") can play more matches than there are
+            # matchdays, so the limits only apply to one-club players.
+            one_club = df.filter(~col(rules["club"]).contains(","))
+            for column, limit, unit in ((rules["matches"], games, "matchdays"),
+                                        (rules["minutes"], games * 100, "minutes possible")):
+                over = one_club.filter(col(column) > limit)
+                if over.count():
+                    who = ", ".join(f"{r[0]} ({r[1]}): {r[2]:g}" for r in
+                                    over.select(rules["player"], rules["club"], column).limit(3).collect())
+                    problems.append(f"{column} above {limit} {unit}: {who}")
+
+    if rules.get("per_match"):
+        problems += check_matches(df, league, start)
+    return problems
+
+
+def check_matches(df: DataFrame, league: str, start: int) -> list[str]:
+    """Rules for match-level data (one row = one player in one match)."""
+    problems = []
+    clubs = expected_clubs(league, start)
+    games = df.groupBy("game_id").agg(F.countDistinct("team").alias("teams"))
+    n_games = games.count()
+    if n_games > clubs * (clubs - 1):
+        problems.append(f"{n_games} matches, but a season has only {clubs * (clubs - 1)}")
+    odd = games.filter("teams != 2")
+    if odd.count():
+        problems.append(f"{odd.count()} matches without exactly 2 clubs "
+                        f"(e.g. game_id {odd.first()['game_id']})")
+    if "min" in df.columns:
+        over = df.filter(col("min") > 130)
+        if over.count():
+            r = over.select("player", "game", "min").first()
+            problems.append(f"{over.count()} rows with more than 130 minutes (e.g. {r[0]}, {r[1]}: {r[2]})")
+    if "date" in df.columns:
+        first, last = date(start, 7, 1), date(start + 1, 8, 31)     # covers COVID-delayed 2019-20
+        outside = df.filter((col("date") < F.lit(first)) | (col("date") > F.lit(last)))
+        if outside.count():
+            problems.append(f"{outside.count()} rows dated outside {first} to {last} "
+                            f"(e.g. {outside.select('date').first()[0]})")
     return problems
 
 
