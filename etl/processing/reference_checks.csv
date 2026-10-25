@@ -1,0 +1,37 @@
+check,table,league,season,club,player,column,expected,tolerance,note
+club_present,fbref,esp-la-liga,2025-26,Levante,,,,,promoted for 2025-26 (validation report)
+club_present,fbref,esp-la-liga,2025-26,Elche,,,,,promoted
+club_present,fbref,esp-la-liga,2025-26,Oviedo,,,,,promoted
+club_absent,fbref,esp-la-liga,2025-26,Las Palmas,,,,,relegated after 2024-25
+club_absent,fbref,esp-la-liga,2025-26,Leganés,,,,,relegated
+club_absent,fbref,esp-la-liga,2025-26,Valladolid,,,,,relegated
+club_present,fbref,eng-premier-league,2025-26,Sunderland,,,,,promoted
+club_present,fbref,eng-premier-league,2025-26,Leeds United,,,,,promoted
+club_present,fbref,eng-premier-league,2025-26,Burnley,,,,,promoted
+club_absent,fbref,eng-premier-league,2025-26,Leicester City,,,,,relegated
+club_absent,fbref,eng-premier-league,2025-26,Southampton,,,,,relegated
+club_absent,fbref,eng-premier-league,2025-26,Ipswich Town,,,,,relegated
+club_present,fbref,ger-bundesliga,2025-26,Köln,,,,,promoted
+club_present,fbref,ger-bundesliga,2025-26,Hamburger SV,,,,,promoted
+club_absent,fbref,ger-bundesliga,2025-26,Holstein Kiel,,,,,relegated
+club_absent,fbref,ger-bundesliga,2025-26,Bochum,,,,,relegated
+club_present,fbref,ita-serie-a,2025-26,Sassuolo,,,,,promoted
+club_present,fbref,ita-serie-a,2025-26,Pisa,,,,,promoted
+club_present,fbref,ita-serie-a,2025-26,Cremonese,,,,,promoted
+club_absent,fbref,ita-serie-a,2025-26,Empoli,,,,,relegated
+club_absent,fbref,ita-serie-a,2025-26,Venezia,,,,,relegated
+club_absent,fbref,ita-serie-a,2025-26,Monza,,,,,relegated
+club_present,fbref,fra-ligue-1,2025-26,Lorient,,,,,promoted
+club_present,fbref,fra-ligue-1,2025-26,Paris FC,,,,,promoted
+club_present,fbref,fra-ligue-1,2025-26,Metz,,,,,promoted
+club_absent,fbref,fra-ligue-1,2025-26,Montpellier,,,,,relegated
+club_absent,fbref,fra-ligue-1,2025-26,Saint-Étienne,,,,,relegated
+club_absent,fbref,fra-ligue-1,2025-26,Reims,,,,,relegated
+player_value,fbref,esp-la-liga,2025-26,,Kylian Mbappé,Gls,25,0,fingerprint in the validation report
+player_value,fbref,eng-premier-league,2025-26,,Erling Haaland,Gls,27,0,fingerprint in the validation report
+player_value,fbref,ger-bundesliga,2025-26,,Harry Kane,PK,10,0,10 penalties scored (validation report)
+player_value,fbref,ger-bundesliga,2025-26,,Harry Kane,PKatt,11,0,from 11 taken
+player_value,fbref,ita-serie-a,2025-26,,Federico Dimarco,Ast,16,0,FBref and Understat both 16
+player_value,understat,ita-serie-a,2025-26,,Federico Dimarco,assists,16,0,
+player_value,fbref,ita-serie-a,2025-26,,Rasmus Højlund,Gls,12,0,FBref 12
+player_value,understat,ita-serie-a,2025-26,,Rasmus Højlund,goals,13,0,Understat 13 (deflection counted differently)
