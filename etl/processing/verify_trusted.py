@@ -14,7 +14,7 @@ Every check prints PASS, WARN or FAIL. Any FAIL -> exit code 1 -> the
 Airflow task turns red, so nobody trains a model on wrong data.
 
 -----------------------------------------------------------------------
-THE FIVE CHECKS
+THE SEVEN CHECKS
 -----------------------------------------------------------------------
  1. coverage        no season is missing between a league's first and last season
  2. complete season every finished season has a player with close to a full
@@ -25,6 +25,9 @@ THE FIVE CHECKS
                                                             <- reference_checks.csv
  5. cross-source    FBref and Understat agree on goals and assists for the same
                     player and season (within +-1 for at least 95% of players)
+ 6. match stats     every match of a finished season is present (380 or 306)
+ 7. match vs season a player's goals/assists added up over his matches equal his
+                    season totals (same source: exact for at least 95% of players)
 
  Checks 3 and 4 read reference_checks.csv. Add a row every time you verify
  something by hand: from then on it is checked automatically, every week.
@@ -129,7 +132,7 @@ def source(root, table, starts):
 # ---------------------------------------------------------------------
 
 def check_coverage(con, root, starts):
-    for table in ("fbref_player_stats", "understat_player_stats", "transfers"):
+    for table in ("fbref_player_stats", "fbref_player_match_stats", "understat_player_stats", "transfers"):
         if not exists(con, root, table):
             record("WARN", "coverage", f"{table}: table not found")
             continue
@@ -249,6 +252,48 @@ def check_cross_source(con, root, starts):
             record("PASS", "cross-source", text)
 
 
+def check_match_stats(con, root, starts):
+    """6. Every match of a finished season is there (380 or 306), and
+    7. a player's goals and assists added up over his matches equal his
+       season totals in fbref_player_stats (same source, so nearly exact)."""
+    m = "fbref_player_match_stats"
+    if not exists(con, root, m):
+        record("WARN", "match stats", f"{m}: table not found")
+        return
+    current = current_season_start()
+    rows = con.sql(f"""SELECT league, season, season_start, count(DISTINCT game_id)
+                       FROM {source(root, m, starts)} GROUP BY ALL ORDER BY league, season_start""").fetchall()
+    bad, finished = [], 0
+    for league, season, start, games in rows:
+        if start >= current:
+            continue
+        finished += 1
+        clubs = 18 if matchdays(league, start) == 34 else 20
+        if games != clubs * (clubs - 1):
+            bad.append(f"{league} {season} ({games} of {clubs * (clubs - 1)})")
+    if bad:
+        record("FAIL", "match stats", f"{len(bad)} seasons with missing matches: {'; '.join(bad[:5])}")
+    elif finished:
+        record("PASS", "match stats", f"{finished} finished seasons have every match")
+
+    if not exists(con, root, "fbref_player_stats"):
+        return
+    rows = con.sql(f"""
+        WITH m AS (SELECT league, season, season_start, player_key, team_key,
+                          sum("Performance_Gls") g, sum("Performance_Ast") a
+                   FROM {source(root, m, starts)} GROUP BY ALL),
+             s AS (SELECT league, season, player_key, team_key, sum("Gls") g, sum("Ast") a
+                   FROM {source(root, 'fbref_player_stats', starts)} GROUP BY ALL)
+        SELECT m.league, m.season, count(*) n,
+               avg((m.g = s.g)::INT) goals_exact, avg((m.a = s.a)::INT) assists_exact
+        FROM m JOIN s USING (league, season, player_key, team_key)
+        GROUP BY ALL ORDER BY m.league, any_value(m.season_start)""").fetchall()
+    for league, season, n, goals, assists in rows:
+        text = (f"{league} {season}: {n} players; match sums equal season totals for "
+                f"goals {goals:.0%}, assists {assists:.0%}")
+        record("PASS" if min(goals, assists) >= CROSS_SOURCE_LIMIT else "FAIL", "match vs season", text)
+
+
 # ---------------------------------------------------------------------
 
 def main():
@@ -269,6 +314,7 @@ def main():
     check_complete_seasons(con, root, starts)
     check_reference(con, root, load_reference(reference), starts)
     check_cross_source(con, root, starts)
+    check_match_stats(con, root, starts)
 
     count = {s: sum(1 for r in results if r[0] == s) for s in ("PASS", "WARN", "FAIL")}
     print(f"\n{count['PASS']} passed, {count['WARN']} warnings, {count['FAIL']} failed")
