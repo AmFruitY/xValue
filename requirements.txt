@@ -10,3 +10,6 @@ pyarrow
 undetected-chromedriver
 selenium
 beautifulsoup4
+scikit-learn
+xgboost
+joblib
