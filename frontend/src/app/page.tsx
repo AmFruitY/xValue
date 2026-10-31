@@ -1,10 +1,20 @@
-import { XValueLanding } from "@/components/landing/xvalue-landing";
-import { getFeaturedPlayer } from "@/lib/data/player-repository";
-import { createPlayerPresentation } from "@/lib/presentation/player-presentation";
+import { NeuralDemo } from "@/components/neural/neural-demo";
+import { getPredictionRepository, type FeaturedRecords } from "@/lib/predictions/repository";
+import type { PredictionFacets } from "@/lib/predictions/types";
 
-export default function Home() {
-  const player = getFeaturedPlayer();
-  const presentation = createPlayerPresentation(player);
+// Read the model results per request so a regenerated Parquet is picked up without a rebuild.
+export const dynamic = "force-dynamic";
 
-  return <XValueLanding player={player} presentation={presentation} />;
+export default async function Home() {
+  const repository = getPredictionRepository();
+  let facets: PredictionFacets = { total: 0, leagues: [], seasons: [], withMarketValue: 0, rangeFactors: null, source: "—" };
+  let featured: FeaturedRecords = { primary: null, secondary: null };
+  let loadError = false;
+  try {
+    [facets, featured] = await Promise.all([repository.facets(), repository.featured()]);
+  } catch (error) {
+    console.error(error);
+    loadError = true;
+  }
+  return <NeuralDemo facets={facets} primary={featured.primary} secondary={featured.secondary} loadError={loadError} />;
 }

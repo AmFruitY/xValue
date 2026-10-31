@@ -1,0 +1,318 @@
+/* Model results (predicciones_xvalue_final): one record = player + club + season, an xValue range and an optional market reference. */
+
+/* Intro (dark, neural identity): the three entry points. */
+.neural-entries { display: grid; gap: 10px; max-width: 520px; margin: 0; animation: neural-copy-in .85s .9s both; }
+.neural-entry { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; padding: 12px 20px; border: 1px solid #345568; border-radius: 3px; background: #06142099; color: #d6f8ff; text-align: left; transition: border-color .2s, background .2s, transform .2s; }
+.neural-entry:hover { border-color: #89e9fb; background: #0f2c3c; transform: translateY(-1px); }
+.neural-entry strong { display: block; font-size: 16px; font-weight: 600; letter-spacing: -.2px; }
+.neural-entry small { display: block; margin-top: 3px; color: #8fa7b6; font-size: 12px; line-height: 1.5; }
+.neural-entry > svg { flex: none; color: #71e4f5; }
+
+/*
+ * Desktop intro fits the visible height: header, brand, title, the three entries,
+ * the whole footballer (ball included) and the footer. Sizes follow the height as
+ * well as the width; the footballer is sized by the free height and keeps 2:3.
+ */
+@media (min-width: 801px) {
+  .neural-intro-header { min-height: 64px; }
+  .neural-intro-footer { min-height: 46px; }
+  .neural-hero-layout { min-height: 0; }
+  .neural-hero-copy { align-self: center; padding: clamp(10px, 2.6vh, 40px) 0; }
+  .neural-wordmark { margin: clamp(6px, 1.8vh, 24px) 0 clamp(6px, 1.8vh, 22px); font-size: clamp(64px, min(10.1vw, 14vh), 174px); }
+  .neural-hero-copy h2 { font-size: clamp(26px, min(3.35vw, 5vh), 58px); }
+  .neural-hero-description { margin: clamp(8px, 1.6vh, 22px) 0 clamp(10px, 2.2vh, 30px); }
+  .neural-entries { gap: clamp(6px, 1vh, 10px); }
+  .neural-entry { min-height: clamp(48px, 7vh, 64px); padding: 8px 18px; }
+  .neural-hero-caption { margin-top: clamp(8px, 1.6vh, 23px); }
+  .neural-hero-scene { min-height: 0; }
+  .neural-hero-actor { bottom: clamp(26px, 4vh, 42px); width: auto; max-width: 95%; height: calc(100% - clamp(40px, 7vh, 70px)); max-height: 760px; aspect-ratio: 2 / 3; }
+  .neural-hero-actor .footballer { width: 100%; height: 100%; }
+  .neural-scene-label { bottom: clamp(8px, 1.4vh, 22px); }
+}
+
+/*
+ * Working interface after the intro: light and opaque. The neural network, the
+ * avatar and the connections stay as quiet, secondary elements.
+ */
+.neural-demo.is-product {
+  --background: #f2f5f7; --surface: #ffffff; --foreground: #13212c;
+  --muted: #4e606d; --line: #d3dce3; --accent: #0a6c8c;
+  --xv-subtle: #5b6b77; --xv-accent-fill: #c4ecf6; --xv-amount: #c2610c; --xv-amount-text: #8f4708; --xv-paid: #334155;
+  background: var(--background); color: var(--foreground);
+}
+.is-product .neural-atmosphere { display: none; }
+.is-product .neural-field { opacity: .45; }
+/* Light-cyan pulses would vanish on a light background: darkened, still secondary. */
+.is-product .neural-component-connections { filter: brightness(.55) saturate(1.5); opacity: .8; }
+.is-product ::selection { background: #c4ecf6; color: #13212c; }
+.is-product .neural-eyebrow { color: var(--muted); font-size: 11px; letter-spacing: 1.4px; }
+.is-product .neural-product-header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.is-product .neural-product-header nav button { color: var(--muted); font-size: 14px; }
+.is-product .neural-product-header nav button:hover { color: var(--foreground); }
+.is-product .neural-product-header nav button.is-selected { color: var(--accent); font-weight: 600; }
+.is-product .neural-product-header nav button.is-selected::after { background: var(--accent); box-shadow: none; }
+.is-product .neural-data-badge { color: var(--xv-subtle); font-size: 10px; }
+.is-product .neural-data-badge i { background: var(--accent); }
+.is-product .neural-product-heading h1 { color: var(--foreground); }
+.is-product .neural-product-heading h1 span { color: var(--accent); }
+.is-product .neural-heading-description { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 640px; }
+/* Only the holographic footballer and its ball, on a transparent background: no tile, border or shadow. */
+.is-product .neural-avatar-figure { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.is-product .neural-avatar-message { border-left-color: var(--accent); }
+.is-product .neural-avatar-message > span { color: var(--accent); font-size: 10px; }
+.is-product .neural-avatar-message p { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.is-product .neural-product-footer { border-top-color: var(--line); color: var(--xv-subtle); font-size: 10px; }
+.is-product .neural-list-note { color: var(--xv-subtle); font-size: 12px; letter-spacing: 0; font-family: inherit; }
+.is-product .neural-empty { color: var(--foreground); }
+
+/* Panels. */
+.xv-workspace { display: grid; gap: 22px; }
+.xv-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
+.xv-column { display: grid; gap: 22px; min-width: 0; }
+/* `backwards`, not `both`: a transform kept after the entrance would trap the search dropdown below the next panel. */
+.xv-panel { position: relative; min-width: 0; padding: 26px 30px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 1px 2px #13212c0d, 0 8px 24px #13212c0a; animation: neural-copy-in .45s ease backwards; }
+/* The panel being used (an open dropdown included) sits above its neighbours. */
+.xv-panel:focus-within { z-index: 20; }
+.xv-panel[data-neural-lit="true"] { filter: none; border-color: var(--accent); box-shadow: 0 0 0 3px #0a6c8c1f, 0 8px 24px #13212c0a; }
+.xv-panel > .neural-eyebrow { margin-bottom: 4px; }
+.xv-label { color: var(--muted); font-family: "Cascadia Code", Consolas, monospace; font-size: 11px; letter-spacing: 1.2px; }
+.xv-footnote { margin: 0; color: var(--xv-subtle); font-size: 13px; line-height: 1.65; }
+.xv-note { margin: 14px 0 0; padding: 10px 12px; border: 1px solid #f1d39b; border-radius: 6px; background: #fff8e8; color: #5c4210; font-size: 13px; line-height: 1.6; }
+
+/* Player card: identity and the xValue range. */
+.xv-player h2 { margin: 0 0 14px; font-size: clamp(28px, 3vw, 40px); font-weight: 500; line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.xv-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.xv-chips li { padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; background: #f6f8fa; color: var(--muted); font-size: 13px; }
+.xv-range { display: grid; gap: 8px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+.xv-range strong { color: var(--accent); font-size: clamp(28px, 3vw, 44px); font-weight: 600; line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.xv-range.is-compact { margin-top: 0; padding-top: 0; border-top: 0; }
+.xv-range.is-compact strong { font-size: clamp(22px, 2.3vw, 30px); }
+.xv-range p, .xv-range details p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.xv-range details { margin-top: 4px; }
+.xv-range summary { display: list-item; min-height: 32px; padding: 6px 0; color: var(--accent); font-size: 14px; font-weight: 600; cursor: pointer; }
+
+/* Scenario: the amount, the main result and the chart. */
+.xv-scenario { display: grid; gap: 22px; }
+.xv-amount-row { display: flex; flex-wrap: wrap; gap: 20px 28px; }
+.xv-amount { display: grid; align-content: start; gap: 6px; flex: 1 1 220px; min-width: 0; }
+.xv-amount label { color: var(--foreground); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.xv-amount-field { display: flex; align-items: center; gap: 8px; max-width: 260px; padding: 0 14px; border: 1px solid #b7c4ce; border-radius: 6px; background: var(--surface); transition: border-color .2s, box-shadow .2s; }
+.xv-amount-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #0a6c8c33; }
+.xv-amount-field input { width: 100%; min-width: 0; min-height: 48px; padding: 0; border: 0; background: transparent; color: var(--foreground); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.neural-demo .xv-amount-field input:focus-visible { outline: none; }
+.xv-amount-field input[aria-invalid="true"] { color: #a12a17; }
+.xv-amount-field:has(input[aria-invalid="true"]) { border-color: #c2412b; }
+.xv-amount-field span { color: var(--muted); font-size: 14px; }
+.xv-amount small { color: var(--xv-subtle); font-size: 12px; line-height: 1.5; }
+.xv-amount .xv-amount-error { color: #a12a17; font-weight: 600; }
+.xv-result { display: grid; gap: 8px; align-content: start; }
+.xv-position { justify-self: start; padding: 6px 12px; border-radius: 999px; background: var(--accent); color: #ffffff; font-size: 14px; font-weight: 600; }
+.xv-result-main { margin: 0; color: var(--foreground); font-size: clamp(18px, 1.7vw, 22px); font-weight: 500; line-height: 1.45; }
+.xv-result-figure { margin: 0; color: var(--accent); font-size: clamp(42px, 4.6vw, 64px); font-weight: 600; line-height: 1.05; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.xv-result-detail { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.xv-result-empty { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.xv-context { display: grid; gap: 8px; margin: 0; padding: 14px 16px 14px 32px; border-radius: 6px; background: #f2f5f7; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.xv-context strong { color: var(--foreground); font-weight: 600; }
+
+/* Market reference: subordinate to the main result. */
+.xv-market { background: #f9fbfc; box-shadow: none; }
+.xv-market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px 40px; margin-top: 16px; }
+.xv-market-grid > div { display: grid; align-content: start; gap: 6px; }
+.xv-market-value { color: var(--foreground); font-size: 24px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.xv-market-value.is-missing { color: var(--muted); font-size: 17px; font-weight: 500; }
+.xv-market small, .xv-market-grid p { margin: 0; color: var(--xv-subtle); font-size: 13px; line-height: 1.6; }
+.xv-market-grid .xv-market-line { color: var(--foreground); font-size: 15px; }
+
+/* Range chart: a thick band, labelled limits, a distinct marker for the amount. Linear from €0. */
+.range-axis { margin: 4px 0 0; }
+.range-axis-lanes { position: relative; display: grid; gap: 18px; padding: 0 2px; }
+.range-axis-row { min-width: 0; }
+.range-axis-label { display: block; margin-bottom: 6px; color: var(--foreground); font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.range-axis-lane { position: relative; }
+.range-axis-track { position: absolute; left: 0; right: 0; height: 2px; margin-top: -1px; background: #d3dce3; }
+.range-axis-band { position: absolute; min-width: 4px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 4px; background: var(--xv-accent-fill); }
+.range-axis-overlap { position: absolute; min-width: 3px; background: repeating-linear-gradient(135deg, #0a6c8c55 0 4px, transparent 4px 9px); pointer-events: none; }
+.range-axis-cap { position: absolute; width: 4px; margin-left: -2px; border-radius: 2px; background: var(--accent); }
+.range-axis-guide { position: absolute; width: 0; border-left: 1px solid #8fa2b0; }
+.range-axis-guide.is-amount { width: 4px; margin-left: -2px; border: 0; border-radius: 2px; background: var(--xv-amount); }
+.range-axis-guide.is-paid { margin-left: -1px; border-left: 2px dashed var(--xv-paid); }
+.range-axis-guide.is-market { border-left-style: dotted; }
+.range-axis-pin { position: absolute; width: 0; height: 0; margin-left: -8px; border-top: 11px solid var(--xv-amount); border-right: 8px solid transparent; border-left: 8px solid transparent; }
+.range-axis-market { position: absolute; width: 12px; height: 12px; background: var(--foreground); box-shadow: 0 0 0 2px var(--surface); transform: translate(-50%, -50%) rotate(45deg); }
+.range-axis-tag { position: absolute; z-index: 1; display: grid; gap: 1px; padding: 2px 8px 3px; border-radius: 4px; background: var(--surface); white-space: nowrap; }
+.range-axis-tag.is-start { margin-left: 4px; }
+.range-axis-tag.is-end { margin-left: -4px; transform: translateX(-100%); text-align: right; }
+.range-axis-tag small { color: var(--muted); font-size: 12px; line-height: 1.3; }
+.range-axis-tag strong { color: var(--foreground); font-size: 16px; font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.range-axis-tag.is-low strong, .range-axis-tag.is-high strong { color: var(--accent); }
+.range-axis-tag.is-amount { border: 1px solid #f0c49a; background: #fff6ee; }
+.range-axis-tag.is-amount small, .range-axis-tag.is-amount strong { color: var(--xv-amount-text); }
+.range-axis-tag.is-paid { border: 1px dashed #94a3b8; }
+.range-axis-tag.is-market small, .range-axis-tag.is-market strong { color: var(--xv-subtle); font-size: 12px; font-weight: 500; }
+.range-axis-scale { position: relative; height: 22px; border-top: 1px solid #b7c4ce; color: var(--xv-subtle); font-size: 12px; font-variant-numeric: tabular-nums; }
+.range-axis-scale span { position: absolute; top: 4px; white-space: nowrap; transform: translateX(-50%); }
+.range-axis-scale span::before { position: absolute; content: ""; top: -9px; left: 50%; width: 1px; height: 5px; background: #b7c4ce; }
+.range-axis-scale span:first-child { transform: none; }
+.range-axis-scale span:first-child::before { left: 0; }
+.range-axis-scale span:last-child { transform: translateX(-100%); }
+.range-axis-scale span:last-child::before { left: auto; right: 0; }
+.range-axis-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 16px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 13px; }
+.range-axis-legend li { display: inline-flex; align-items: center; gap: 8px; }
+.range-axis-legend i { display: inline-block; flex: none; }
+.range-axis-legend .is-band { width: 22px; height: 12px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 3px; background: var(--xv-accent-fill); }
+.range-axis-legend .is-amount { width: 0; height: 0; border-top: 10px solid var(--xv-amount); border-right: 7px solid transparent; border-left: 7px solid transparent; }
+.range-axis-legend .is-paid { width: 0; height: 16px; border-left: 2px dashed var(--xv-paid); }
+.range-axis-legend .is-market { width: 9px; height: 9px; background: var(--foreground); transform: rotate(45deg); }
+.range-axis-legend .is-overlap { width: 22px; height: 12px; border: 1px solid #0a6c8c55; background: repeating-linear-gradient(135deg, #0a6c8c55 0 3px, transparent 3px 6px); }
+
+/* Compare: two records side by side, then the shared chart and the price difference. */
+.xv-compare { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 22px; align-items: start; }
+.xv-compare > article:first-child { grid-column: 1; grid-row: 1; }
+.xv-compare > article:nth-child(2) { grid-column: 3; grid-row: 1; }
+.xv-compare-side { display: grid; gap: 18px; }
+.xv-compare-market { display: grid; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.xv-compare-market p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.xv-compare-market strong { color: var(--foreground); font-weight: 600; }
+.xv-compare-market strong.is-missing { color: var(--muted); font-weight: 500; }
+.xv-compare-market .xv-compare-detail { color: var(--xv-subtle); font-size: 12px; }
+.xv-price > div { display: grid; gap: 12px; margin: 14px 0 16px; }
+.neural-swap { grid-column: 2; grid-row: 1; align-self: start; display: grid; place-items: center; width: 44px; height: 44px; margin-top: 30px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--accent); }
+.neural-swap:hover { border-color: var(--accent); }
+
+/* Player search: combobox over the API, paged with «Cargar más». The dropdown is opaque. */
+.neural-picker { position: relative; }
+.neural-picker-field { position: relative; display: flex; align-items: center; margin-top: 10px; padding: 0 12px; border: 1px solid #b7c4ce; border-radius: 6px; background: var(--surface); transition: border-color .2s, box-shadow .2s; }
+.neural-picker-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #0a6c8c33; }
+.neural-picker-field input { width: 100%; min-width: 0; min-height: 48px; padding: 0 24px 0 0; border: 0; background: transparent; color: var(--foreground); font-size: 18px; font-weight: 500; text-overflow: ellipsis; }
+.neural-demo .neural-picker-field input:focus-visible { outline: none; }
+.neural-picker-field input::placeholder { color: #6a7b87; }
+.neural-picker-field svg { position: absolute; right: 12px; color: var(--muted); pointer-events: none; }
+.neural-picker-dropdown { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; right: 0; display: grid; border: 1px solid #b7c4ce; border-radius: 8px; background: #ffffff; box-shadow: 0 18px 40px #13212c2e; overflow: hidden; }
+.neural-picker-list { max-height: 340px; overflow: auto; margin: 0; padding: 6px; list-style: none; }
+.neural-picker-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 10px; border-radius: 5px; color: var(--foreground); font-size: 14px; cursor: pointer; }
+.neural-picker-list li.is-active { background: #e2f3f8; box-shadow: inset 3px 0 0 var(--accent); }
+.neural-picker-list li > span { display: grid; gap: 2px; min-width: 0; }
+.neural-picker-list li strong { font-weight: 600; }
+.neural-picker-list li small { color: var(--muted); font-size: 12px; }
+.neural-picker-list li em { flex: none; color: var(--accent); font-size: 13px; font-style: normal; font-weight: 600; font-variant-numeric: tabular-nums; }
+.neural-picker-list .neural-picker-empty { min-height: 40px; color: var(--muted); cursor: default; }
+.neural-picker-list .neural-picker-empty.is-error { color: #a12a17; }
+.neural-picker-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 10px 12px; border-top: 1px solid var(--line); background: #f6f8fa; }
+.neural-picker-footer p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.neural-picker-footer button { min-height: 40px; padding: 0 16px; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent); font-size: 14px; font-weight: 600; }
+.neural-picker-footer button:hover:not(:disabled) { background: #e2f3f8; }
+.neural-picker-footer button:disabled { opacity: .65; cursor: progress; }
+
+/* How it works: the formula and five blocks, on light panels. */
+.is-product .neural-method-flow { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.is-product .neural-method-flow > span { color: var(--muted); font-size: 11px; }
+.is-product .neural-method-flow > strong { color: var(--accent); }
+.is-product .neural-method-flow > i { color: var(--muted); }
+.neural-method-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; }
+.is-product .neural-method-grid article { padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.is-product .neural-method-grid article > span { color: var(--accent); font-size: 12px; }
+.is-product .neural-method-grid h2 { color: var(--foreground); font-size: 20px; font-weight: 600; }
+.is-product .neural-method-grid p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+
+/*
+ * Compact working layout: Comprar and Vender fit a desktop screen (1366×768 and up)
+ * without page scrolling. Header, heading and footer take one line each; the
+ * player, the scenario and the chart sit side by side.
+ */
+.is-product .neural-product-header { min-height: 56px; }
+.is-product .neural-product-main { padding-top: 14px; }
+.is-product .neural-product-heading.is-compact { grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; margin-bottom: 14px; }
+.is-product .neural-product-heading.is-compact h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.is-product .neural-product-heading.is-compact .neural-heading-description { margin: 2px 0 0; font-size: 14px; line-height: 1.5; }
+.is-product .neural-avatar-slot.is-compact { justify-self: end; width: auto; min-height: 0; gap: 0; opacity: 1; transform: none; }
+.is-product .neural-avatar-slot.is-compact .neural-avatar-figure { flex: 0 0 38px; width: 38px; height: 56px; }
+/* The message takes no room while the avatar is silent. */
+.is-product .neural-avatar-slot.is-compact .neural-avatar-message { max-width: 0; padding: 0; border-left-width: 0; overflow: hidden; opacity: 0; transition: max-width .4s, opacity .4s; }
+.is-product .neural-avatar-slot.is-compact.is-visible .neural-avatar-message { max-width: 360px; margin-left: 10px; padding: 2px 0 2px 10px; border-left-width: 2px; opacity: 1; }
+.is-product .neural-avatar-slot.is-compact .neural-avatar-message p { margin: 0; font-size: 12px; line-height: 1.5; }
+.is-product .neural-product-heading.is-compact .neural-heading-description { max-width: 620px; }
+/* On desktop the message floats beside the avatar as an opaque bubble: it never changes the heading height. */
+@media (min-width: 901px) {
+  .is-product .neural-avatar-slot.is-compact { position: relative; }
+  .is-product .neural-avatar-slot.is-compact .neural-avatar-message { position: absolute; z-index: 25; top: 50%; right: calc(100% + 10px); width: 340px; transform: translateY(-50%); }
+  .is-product .neural-avatar-slot.is-compact.is-visible .neural-avatar-message { margin: 0; padding: 8px 12px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 24px #13212c1f; }
+}
+.is-product .neural-product-footer.is-compact { gap: 4px 16px; margin-top: 14px; padding: 8px 0 10px; font-family: inherit; font-size: 11px; letter-spacing: 0; line-height: 1.4; }
+
+.xv-task { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 16px; align-items: start; }
+.xv-task .xv-panel { padding: 18px 20px; }
+.xv-task .xv-panel > .neural-eyebrow { margin: 0 0 2px; }
+.xv-task .xv-scenario, .xv-task .xv-chart { display: grid; gap: 14px; align-content: start; }
+.xv-task .xv-player { display: grid; gap: 10px; align-content: start; }
+.xv-task .neural-picker-field { margin-top: 6px; }
+.xv-task .neural-picker-field input { min-height: 44px; font-size: 19px; font-weight: 600; }
+.xv-task .xv-chips li { padding: 3px 10px; font-size: 12px; }
+.xv-task .xv-note { margin: 0; padding: 6px 10px; font-size: 12px; }
+.xv-task .xv-range { gap: 4px; margin-top: 2px; padding-top: 12px; }
+.xv-task .xv-range strong { font-size: clamp(24px, 2.1vw, 30px); }
+.xv-task .xv-range p, .xv-task .xv-range details p { font-size: 13px; line-height: 1.55; }
+.xv-task .xv-range summary { min-height: 28px; padding: 4px 0; font-size: 13px; }
+.xv-task .xv-amount-row { gap: 12px 16px; }
+.xv-task .xv-amount { flex-basis: 150px; gap: 4px; }
+.xv-task .xv-amount label { font-size: 13px; }
+.xv-task .xv-amount-field input { min-height: 42px; font-size: 20px; }
+.xv-task .xv-result { gap: 6px; }
+.xv-task .xv-result-main { font-size: 17px; line-height: 1.45; }
+.xv-task .xv-result-detail, .xv-task .xv-result-empty { font-size: 13px; line-height: 1.55; }
+.xv-task .xv-result-figure { font-size: clamp(36px, 3.4vw, 48px); }
+.xv-task .xv-footnote { font-size: 12px; line-height: 1.5; }
+.xv-task .xv-context { gap: 4px; padding: 8px 10px; list-style: none; font-size: 13px; }
+.xv-task .xv-context summary { cursor: pointer; line-height: 1.5; }
+.xv-task .xv-context summary span { color: var(--muted); }
+.xv-task .xv-context details p { margin: 4px 0 2px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* Figures behind the xValue Gap: central estimate, market value and Gap, one line each. */
+.xv-figures { display: grid; gap: 6px; margin: 0; padding-top: 10px; border-top: 1px solid var(--line); }
+.xv-figures > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
+.xv-figures dt { color: var(--muted); font-size: 13px; }
+.xv-figures dd { margin: 0; color: var(--foreground); font-size: 15px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.xv-figures dd.is-missing { color: var(--muted); font-weight: 500; }
+.xv-range.is-compact strong.xv-central { color: var(--foreground); font-size: 15px; font-weight: 600; letter-spacing: 0; line-height: 1.5; }
+/* Central estimate on the band: a ringed dot, distinct from the market diamond and the amount marker. */
+.range-axis-central { position: absolute; width: 12px; height: 12px; box-sizing: border-box; border: 3px solid var(--accent); border-radius: 50%; background: var(--surface); transform: translate(-50%, -50%); }
+.range-axis-legend .is-central { width: 11px; height: 11px; box-sizing: border-box; border: 3px solid var(--accent); border-radius: 50%; background: var(--surface); }
+
+/* Cómo funciona, compact: the flow, the five blocks and the notes fit a desktop screen. */
+.is-product .neural-methodology { display: grid; gap: 14px; }
+.is-product .neural-method-flow { justify-content: center; gap: 18px; padding: 12px 20px; }
+.is-product .neural-method-flow > strong { font-size: 26px; letter-spacing: -.5px; }
+.is-product .neural-method-flow > i { font-size: 20px; }
+.is-product .neural-method-grid { gap: 14px; padding: 0; }
+.is-product .neural-method-grid article { padding: 16px 16px 18px; border-top: 1px solid var(--line); }
+.is-product .neural-method-grid h2 { margin: 6px 0 8px; font-size: 17px; line-height: 1.3; }
+.is-product .neural-method-grid p { margin: 0; font-size: 13.5px; line-height: 1.55; }
+
+/* One-line chart labels. */
+.range-axis-tag { display: flex; align-items: baseline; gap: 5px; padding: 1px 6px 2px; }
+.range-axis-tag small { font-size: 12px; line-height: 1.4; }
+.range-axis-tag strong { font-size: 14px; line-height: 1.4; }
+.range-axis-legend { gap: 6px 16px; margin-top: 10px; font-size: 12px; }
+.range-axis-scale { height: 20px; font-size: 11px; }
+
+@media (max-width: 1100px) {
+  .neural-method-grid { grid-template-columns: 1fr 1fr; }
+  .xv-task { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .xv-task .xv-chart { grid-column: 1 / -1; }
+}
+@media (max-width: 1000px) {
+  .xv-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .xv-panel, .xv-task .xv-panel { padding: 20px 16px; }
+  .xv-task { grid-template-columns: minmax(0, 1fr); }
+  .xv-compare { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .xv-compare > article:first-child, .xv-compare > article:nth-child(2) { grid-column: 1; }
+  .xv-compare > article:nth-child(2) { grid-row: 3; }
+  .neural-swap { grid-column: 1; grid-row: 2; justify-self: center; margin: 0; transform: rotate(90deg); }
+  .neural-entry { min-height: 58px; padding: 10px 16px; }
+  .neural-method-grid { grid-template-columns: 1fr; }
+  .range-axis-tag strong { font-size: 15px; }
+  /* Five scale labels do not fit a phone: keep 0, the middle and the end. */
+  .range-axis-scale span:nth-child(2), .range-axis-scale span:nth-child(4) { display: none; }
+  .is-product .neural-heading-description { font-size: 14px; }
+}

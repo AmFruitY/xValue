@@ -1,0 +1,197 @@
+.neural-demo {
+  --background: #030914; --surface: #081321; --foreground: #ecf5f9;
+  --muted: #8c9fad; --line: #20313f; --accent: #62dff6;
+  --signal: #72eac9; --negative: #f1ab9d;
+  position: relative; isolation: isolate; min-height: 100svh; overflow: clip;
+  background: var(--background); color: var(--foreground);
+  font-family: "Arial Nova", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.neural-demo button, .neural-demo input, .neural-demo select { font: inherit; }
+.neural-demo button { cursor: pointer; }
+.neural-demo button:focus-visible, .neural-demo a:focus-visible, .neural-demo select:focus-visible, .neural-demo input:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+.neural-demo h1:focus { outline: none; }
+.neural-demo ::selection { background: #62dff6; color: #030914; }
+.neural-field, .neural-atmosphere { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; pointer-events: none; }
+.neural-field { max-height: 1500px; }
+.neural-field-quiet { opacity: .6; }
+.neural-atmosphere { z-index: -1; background: radial-gradient(ellipse at 76% 43%, #06345755, transparent 40%), linear-gradient(90deg, #030914b8 0%, #03091480 38%, transparent 70%); }
+.is-product .neural-atmosphere { background: radial-gradient(ellipse at 87% 5%, #07334b66, transparent 38%), linear-gradient(#03091420, #030914c9 60%); }
+.neural-intro { display: grid; grid-template-rows: auto 1fr auto; min-height: 100svh; padding: 0 clamp(24px, 5vw, 88px); }
+.neural-intro-header, .neural-product-header { display: flex; align-items: center; justify-content: space-between; min-height: 96px; gap: 24px; border-bottom: 1px solid #b3e6ff1c; }
+.neural-small-brand { display: inline-flex; align-items: center; gap: 11px; font-size: 25px; font-weight: 700; letter-spacing: -1.5px; }
+.neural-brand-dot { width: 5px; height: 5px; margin-top: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px #63e6ff77; }
+.neural-edition, .neural-skip, .neural-eyebrow, .neural-scene-label, .neural-intro-footer, .neural-data-badge, .neural-list-note, .neural-product-footer { font-family: "Cascadia Code", Consolas, monospace; font-size: 10px; font-weight: 400; letter-spacing: 1.6px; line-height: 1.6; }
+.neural-edition { color: #8b9dac; font-size: 9px; letter-spacing: 2px; }
+.neural-skip { display: flex; align-items: center; gap: 14px; padding: 10px 0; border: 0; background: none; color: #b6c7d2; letter-spacing: .2px; font-family: inherit; font-size: 12px; }
+.neural-skip:hover { color: var(--accent); }
+.neural-hero-layout { display: grid; grid-template-columns: 1.04fr 1fr; align-items: center; gap: 24px; width: 100%; max-width: 1600px; margin: 0 auto; min-height: 590px; }
+.neural-hero-copy { position: relative; z-index: 2; padding: 46px 0 60px; min-width: 0; }
+.neural-eyebrow { display: flex; align-items: center; gap: 10px; margin: 0; color: #9bb0c1; font-size: 9px; letter-spacing: 1.7px; }
+.neural-hero-copy > .neural-eyebrow > span { display: block; width: 18px; height: 1px; background: var(--accent); box-shadow: 0 0 8px #63e6ff; }
+.neural-wordmark { position: relative; display: inline-block; max-width: 100%; margin: 27px 0 28px; font-size: clamp(86px, 10.1vw, 174px); font-weight: 700; line-height: 1.04; letter-spacing: -.075em; white-space: nowrap; }
+.neural-wordmark > span { display: inline-block; padding-right: .07em; color: #4fb5d680; background: linear-gradient(120deg, #5de9ff 8%, #8beeff 37%, #c7f4ff 54%, #3f9dce 86%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 24px #1facdf22); animation: neural-brand-form 1.9s cubic-bezier(.2,.7,.25,1) both; }
+.neural-wordmark > canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; mix-blend-mode: screen; }
+.neural-hero-copy h2 { margin: 0; font-size: clamp(34px, 3.35vw, 58px); font-weight: 400; line-height: 1.16; letter-spacing: -.045em; animation: neural-copy-in .85s .65s both; }
+.neural-hero-copy h2 span { color: #8da4b5; }
+.neural-hero-description { margin: 22px 0 30px; color: #91a5b6; font-size: 14px; line-height: 1.8; animation: neural-copy-in .85s .8s both; }
+.neural-hero-caption { display: flex; align-items: center; gap: 8px; margin-top: 23px; color: #70899c; font-size: 10px; }
+.neural-signal-dot { display: block; width: 4px; height: 4px; border-radius: 50%; background: #67d7e9; }
+.neural-hero-scene { position: relative; align-self: stretch; overflow: hidden; min-width: 0; min-height: 560px; }
+.neural-hero-actor { position: absolute; bottom: 42px; left: 50%; width: min(95%, 440px); aspect-ratio: 2 / 3; transform: translateX(-50%); }
+.footballer { position: relative; width: 100%; aspect-ratio: 2 / 3; }
+.footballer-floor { position: absolute; width: 100%; height: 7%; bottom: 11%; left: 7%; border-radius: 50%; background: radial-gradient(ellipse, #35c0f448, #1e98d817 50%, transparent 70%); filter: blur(8px); transform: rotate(-4deg); }
+.footballer-contact { position: absolute; left: 69%; top: 81%; width: 28%; height: 4%; border: 1px solid #63dcff77; border-radius: 50%; opacity: 0; }
+.footballer-paths { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+.footballer-fiber { stroke: #58cffa; stroke-width: .7; opacity: .2; }
+.footballer-pulse { stroke: #b0f6ff; stroke-width: 1.3; stroke-dasharray: 12 740; stroke-dashoffset: 750; opacity: .75; filter: drop-shadow(0 0 3px #45ccff); }
+.footballer-animated .footballer-pulse { animation: neural-path-pulse 4.4s linear infinite; }
+.neural-scene-orbit { position: absolute; top: 17%; left: 9%; width: 83%; aspect-ratio: 1; border: 1px solid #44c4ef0a; border-radius: 50%; box-shadow: inset 0 0 100px #06436c19; }
+.neural-scene-orbit::after { position: absolute; content: ""; inset: 16%; border-radius: 50%; border: 1px dashed #5bd9ee0d; }
+.neural-scene-label { position: absolute; bottom: 22px; left: 12%; right: 5%; display: flex; justify-content: space-between; color: #5b8097; font-size: 8px; letter-spacing: 1.5px; }
+.neural-scene-status { display: flex; align-items: center; gap: 7px; color: #6fb9cd; }
+.neural-scene-status i { width: 4px; height: 4px; border-radius: 50%; background: #64e5fc; box-shadow: 0 0 8px #2fcaef; }
+.neural-intro-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 80px; border-top: 1px solid #b3e6ff1c; color: #658296; font-size: 8px; letter-spacing: 1.3px; }
+.neural-intro-footer > span { display: flex; gap: 15px; flex-wrap: wrap; }
+.neural-intro-footer i { color: #6ccae4; font-style: normal; }
+.neural-intro-progress { display: flex; align-items: center; gap: 16px; white-space: nowrap; font-size: 7px; }
+.neural-intro-progress > div { width: 74px; height: 1px; background: #274356; }
+.neural-intro-progress > div > i { display: block; width: 100%; height: 1px; transform-origin: left; background: #69d6ed; transition: transform .15s linear; }
+.neural-character-flight { position: fixed; z-index: 100; display: none; pointer-events: none; }
+.neural-character-flight .footballer { height: 100%; }
+.neural-character-flight .footballer-paths, .neural-character-flight .footballer-floor, .neural-character-flight .footballer-contact { display: none; }
+
+/* The product uses the same light vocabulary with a quieter background. */
+.neural-product { min-height: 100svh; }
+.neural-product-header { padding: 0 clamp(22px, 5vw, 88px); min-height: 86px; }
+.neural-home { padding: 0; border: 0; background: transparent; color: var(--foreground); }
+.neural-product-header nav { display: flex; gap: 30px; align-self: stretch; align-items: stretch; }
+.neural-product-header nav button { position: relative; padding: 0; border: 0; background: transparent; color: #879ba9; font-size: 12px; white-space: nowrap; transition: color .2s; }
+.neural-product-header nav button:hover { color: #d6f8ff; }
+.neural-product-header nav button.is-selected { color: #90e9f8; }
+.neural-product-header nav button.is-selected::after { position: absolute; content: ""; height: 2px; bottom: 0; left: 0; right: 0; background: #76dff2; box-shadow: 0 0 12px #76dff244; }
+.neural-data-badge { display: inline-flex; align-items: center; gap: 8px; color: #718b9b; font-size: 8px; letter-spacing: .7px; }
+.neural-data-badge i { width: 4px; height: 4px; border-radius: 50%; background: #83aeaa; }
+.neural-product-main { width: min(100%, 1600px); margin: 0 auto; padding: 58px clamp(22px, 5vw, 88px) 0; }
+.neural-product-heading { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; margin-bottom: 45px; }
+.neural-product-heading h1 { margin: 19px 0 0; font-size: clamp(36px, 4vw, 62px); font-weight: 400; letter-spacing: -.055em; line-height: 1.1; }
+.neural-product-heading h1 span { color: #78d6e9; }
+.neural-heading-description { color: #849eaf; font-size: 12px; line-height: 1.8; margin: 19px 0 0; }
+.neural-avatar-slot { display: flex; gap: 16px; align-items: center; justify-self: end; width: min(100%, 410px); min-height: 138px; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .6s, transform .6s; }
+.neural-avatar-slot.is-visible { opacity: 1; transform: translateY(0); }
+.neural-avatar-figure { flex: 0 0 76px; width: 76px; height: 114px; }
+.footballer-compact { width: 100%; height: 100%; }
+.neural-avatar-message { border-left: 1px solid #25637b; padding: 6px 0 6px 18px; }
+.neural-avatar-message > span { display: flex; align-items: center; gap: 7px; color: #6cbccc; font-size: 9px; }
+.neural-avatar-message > span i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.neural-avatar-message p { margin: 10px 0 0; font-size: 11px; line-height: 1.8; color: #9ab0bf; }
+.neural-workspace { animation: neural-copy-in .45s ease both; }
+.neural-list-note { margin: 15px 0 0; color: #5d7b8e; font-size: 8px; letter-spacing: .15px; }
+.neural-empty { padding: 40px 18px; color: #b5cbd9; font-size: 13px; line-height: 1.8; }
+.neural-product-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; border-top: 1px solid #203342; margin-top: 55px; padding: 25px 0; color: #627d8f; font-size: 8px; letter-spacing: .6px; }
+.neural-comparison-table { margin-top: 35px; }
+.neural-method-flow { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 35px 36px; border: 1px solid #2b4555; border-radius: 5px; background: linear-gradient(120deg, #0c1d2a80, #091a2680); }
+.neural-method-flow > span { color: #8ba9bb; font-family: Consolas, monospace; font-size: 10px; letter-spacing: 1px; }
+.neural-method-flow > strong { color: #a4e8f6; font-size: 43px; letter-spacing: -2px; font-weight: 500; }
+.neural-method-flow > i { color: #4ba4bf; font-style: normal; font-size: 24px; }
+.neural-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 65px; padding: 35px 0; }
+.neural-method-grid article { border-top: 1px solid #294250; padding-top: 25px; }
+.neural-method-grid article > span { font-family: Consolas, monospace; color: #72c0d4; font-size: 10px; }
+.neural-method-grid h2 { font-size: 24px; font-weight: 400; letter-spacing: -.5px; margin: 13px 0; }
+.neural-method-grid p { color: #849eaf; font-size: 12px; line-height: 1.9; max-width: 450px; }
+
+@keyframes neural-brand-form { 0% { clip-path: inset(0 100% 0 0); opacity: .1; } 100% { clip-path: inset(0 0 0 0); opacity: 1; } }
+@keyframes neural-copy-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes neural-path-pulse { to { stroke-dashoffset: -750; } }
+
+@media (min-width: 1600px) { .neural-hero-actor { width: min(96%, 520px); } .neural-hero-layout { min-height: 760px; } }
+@media (max-width: 1100px) {
+  .neural-intro { padding: 0 32px; }
+  .neural-hero-layout { min-height: 550px; }
+  .neural-hero-scene { min-height: 550px; }
+  .neural-hero-actor { width: 100%; bottom: 40px; }
+  .neural-product-header nav { gap: 20px; }
+  .neural-data-badge { font-size: 7px; }
+  .neural-product-main { padding-top: 40px; }
+  .neural-avatar-slot { gap: 8px; }
+  .neural-avatar-message { padding-left: 12px; }
+}
+@media (max-width: 800px) {
+  .neural-edition { display: none; }
+  .neural-intro-footer { align-items: start; padding-top: 20px; min-height: 84px; }
+  .neural-intro-progress { flex-direction: column; align-items: end; gap: 10px; }
+  .neural-product-header { flex-wrap: wrap; padding-top: 22px; gap: 16px; }
+  .neural-product-header nav { order: 3; width: 100%; min-height: 46px; justify-content: space-between; gap: 15px; }
+  .neural-product-heading { grid-template-columns: 1fr 1fr; gap: 22px; }
+  .neural-avatar-message p { font-size: 10px; }
+  .neural-avatar-message > span { font-size: 8px; }
+  .neural-avatar-figure { flex-basis: 60px; width: 60px; height: 90px; }
+}
+@media (max-width: 600px) {
+  .neural-intro { padding: 0 23px; }
+  .neural-intro-header { min-height: 74px; }
+  .neural-small-brand { font-size: 23px; }
+  .neural-skip { font-size: 10px; gap: 8px; }
+  .neural-hero-layout { grid-template-columns: 1fr; gap: 0; min-height: auto; }
+  .neural-hero-copy { padding: 36px 0 0; }
+  .neural-hero-copy > .neural-eyebrow { font-size: 7px; letter-spacing: 1.3px; }
+  .neural-wordmark { margin: 19px 0 17px; font-size: clamp(82px, 22vw, 120px); }
+  .neural-hero-copy h2 { font-size: 34px; }
+  .neural-hero-description { font-size: 12px; margin: 17px 0 23px; }
+  .neural-hero-caption { margin-top: 16px; font-size: 9px; }
+  .neural-hero-scene { min-height: 335px; height: 44svh; max-height: 410px; margin: 0 -3px; }
+  .neural-hero-actor { bottom: 5px; width: min(74%, 285px); }
+  .neural-scene-label { bottom: 13px; left: 0; right: 0; font-size: 6px; }
+  .neural-scene-orbit { top: 5%; left: 15%; width: 70%; }
+  .neural-intro-footer { gap: 12px; padding-top: 17px; min-height: 82px; font-size: 6px; letter-spacing: .6px; }
+  .neural-intro-footer > span { gap: 6px; max-width: 210px; }
+  .neural-intro-progress { font-size: 5px; letter-spacing: .3px; }
+  .neural-intro-progress > div { width: 50px; }
+  .neural-product-header { padding-left: 23px; padding-right: 23px; }
+  .neural-product-header nav button { font-size: 10px; }
+  .neural-product-main { padding: 32px 23px 0; }
+  .neural-product-heading { grid-template-columns: 1fr; gap: 18px; margin-bottom: 25px; }
+  .neural-product-heading h1 { font-size: 40px; margin-top: 15px; }
+  .neural-heading-description { font-size: 11px; margin-top: 13px; }
+  .neural-product-heading .neural-eyebrow { font-size: 7px; }
+  .neural-avatar-slot { justify-self: stretch; width: 100%; min-height: 85px; gap: 12px; }
+  .neural-avatar-figure { flex-basis: 51px; width: 51px; height: 76.5px; }
+  .neural-avatar-message { padding: 3px 0 3px 12px; }
+  .neural-avatar-message p { font-size: 10px; margin-top: 6px; line-height: 1.65; }
+  .neural-product-footer { margin-top: 36px; padding-bottom: 24px; gap: 10px; font-size: 6px; }
+  .neural-method-flow { padding: 25px 16px; gap: 10px; }
+  .neural-method-flow > span { font-size: 7px; letter-spacing: .2px; line-height: 1.8; }
+  .neural-method-flow > strong { font-size: 28px; letter-spacing: -1.5px; }
+  .neural-method-flow > i { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neural-demo *, .neural-demo *::before, .neural-demo *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .neural-wordmark > span { clip-path: none; opacity: 1; }
+  .neural-character-flight { display: none !important; }
+}
+.motion-reduced .neural-wordmark > span { animation: none; clip-path: none; }
+
+/* A continuous skin mesh preserves the actor while articulating individual joints. */
+.footballer-mesh .footballer-fallback, .footballer-skin { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.footballer-skin { opacity: 0; }
+.footballer-ready .footballer-skin { opacity: 1; }
+.footballer-ready .footballer-fallback { opacity: 0; }
+.footballer-mesh .footballer-floor { z-index: -1; }
+.footballer-mesh .footballer-contact { animation: none; }
+.footballer-mesh[data-contact="true"] .footballer-contact { animation: neural-impact 1s ease-out both; }
+.footballer-mesh .footballer-fiber { opacity: .34; }
+.footballer-compact .footballer-skin { filter: drop-shadow(0 0 5px #37c6ed55); }
+.neural-field { position: fixed; max-height: none; }
+.neural-field-quiet { opacity: 1; }
+.neural-atmosphere { background: radial-gradient(ellipse at 76% 43%, #06345755, transparent 40%), linear-gradient(90deg, #030914b8, #03091444 38%, transparent 70%); }
+.is-product .neural-atmosphere { background: radial-gradient(ellipse at 87% 5%, #07334b44, transparent 38%), linear-gradient(#03091410, #03091455); }
+.neural-component-connections { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+.neural-avatar-figure { flex-basis: 92px; width: 92px; height: 138px; }
+.neural-avatar-slot { min-height: 148px; }
+[data-neural] { transition: filter .6s, border-color .6s, box-shadow .6s; }
+[data-neural-lit="true"] { filter: brightness(1.2); }
+.neural-method-flow { background: linear-gradient(120deg, #0c1d2ad9, #091a26b3); }
+.neural-method-grid article { background: linear-gradient(#03091480, transparent); }
+@keyframes neural-impact { 0% { opacity: .9; transform: scale(.65); } 100% { opacity: 0; transform: scale(3.4); } }
+@media (max-width: 800px) { .neural-avatar-figure { flex-basis: 76px; width: 76px; height: 114px; } }
+@media (max-width: 600px) { .neural-avatar-figure { flex-basis: 68px; width: 68px; height: 102px; } .neural-avatar-slot { min-height: 108px; } }
